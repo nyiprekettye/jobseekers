@@ -1,0 +1,26 @@
+{
+  "name": "jobseekers",
+  "version": "1.0.0",
+  "description": "university project - jobseeker",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyiprekettye/jobseekers.git"
+  },
+  "author": "nyiprekettye - Nyíri Péter - nyiprekettye@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nyiprekettye/jobseekers/issues"
+  },
+  "homepage": "https://github.com/nyiprekettye/jobseekers#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "underscore": "^1.8.3"
+  }
+}
