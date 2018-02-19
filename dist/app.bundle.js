@@ -22612,6 +22612,11 @@ function app() {
             'span',
             null,
             'My first JSX span!'
+        ),
+        _react2.default.createElement(
+            'h2',
+            null,
+            'hali'
         )
     );
 }
@@ -22656,7 +22661,7 @@ exports = module.exports = __webpack_require__(82)(false);
 
 
 // module
-exports.push([module.i, "h1 {\n    color: #31416D;\n}\n", ""]);
+exports.push([module.i, "h1 {\r\n    color: #31416D;\r\n}\r\n", ""]);
 
 // exports
 
@@ -22796,7 +22801,7 @@ exports = module.exports = __webpack_require__(82)(false);
 
 
 // module
-exports.push([module.i, "html, body {\n    font-family: sans-serif;\n    background-color: #dddddd;\n}\n", ""]);
+exports.push([module.i, "html, body {\r\n    font-family: sans-serif;\r\n    background-color: #dddddd;\r\n}\r\n", ""]);
 
 // exports
 
