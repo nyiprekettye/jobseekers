@@ -20,7 +20,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
     console.log('Serving ', req.url);
     res.sendFile(__dirname + '/dist/app.html');
 });
@@ -29,6 +29,7 @@ app.get('/', function (req, res) {
     res.send('Hello World')
 });
 */
+
 http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
 });
