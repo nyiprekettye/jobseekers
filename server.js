@@ -7,6 +7,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 //var React = require('react')
 //var ReactDOM = require('react-dom')
+import user from './server/routes/user';
+
 
 app.set('port', process.env.PORT || 8080);
 app.set('jwtTokenSecret', '123456ABCDEF');
@@ -19,6 +21,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
+
+app.use('/api/user', user);
 
 app.get('/*', (req, res) => {
     console.log('Serving ', req.url);
