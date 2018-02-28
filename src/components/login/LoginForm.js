@@ -35,7 +35,7 @@ class LoginForm extends React.Component {
         if (this.isValid()) {
             this.setState({ errors: {}, isLoading: true });
             this.props.login(this.state).then(
-                (res) => this.context.router.push('/'),
+                (res) => this.context.router.history.push('/'),
                 (err) => {
                     if(err.response.status&& parseInt(err.response.status) === 404 ){
                         this.setState({ errors:{response: "server is not available"}, isLoading: false });

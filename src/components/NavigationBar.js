@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../actions/auth.action';
 
@@ -8,7 +8,7 @@ class NavigationBar extends React.Component {
     logout(e) {
         e.preventDefault();
         this.props.logout();
-        this.context.router.push('/')
+        this.context.router.history.push('/')
     }
 
     render() {
