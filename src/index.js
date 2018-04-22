@@ -13,6 +13,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './reducers/rootReducers';
 import jwtDecode from 'jwt-decode';
 import { setCurrentUser } from './actions/auth.action';
+import { setCurrentJobseeker } from './actions/jobseeker.action';
 
 const store = createStore(
     rootReducer,
@@ -23,30 +24,22 @@ const store = createStore(
 );
 
 if (localStorage.jwtToken) {
-    //setAuthorizationToken(localStorage.jwtToken);
     store.dispatch(setCurrentUser(jwtDecode(localStorage.jwtToken)));
 }
 
-const Home = () => (
-    <div>
-        <h1>Home...</h1>
-    </div>
-)
-const About = () => (
-    <div>
-        <h1>About...</h1>
-    </div>
-)
-const Contact = ({ match }) => (
-    <div>
-        <h1>Contact...</h1>
-    </div>
-)
-
+if (localStorage.jobseekerJwtToken,localStorage.jobseekerName) {
+    store.dispatch(setCurrentJobseeker({
+        token: jwtDecode(localStorage.jobseekerJwtToken),
+        userName : localStorage.jobseekerName
+    }));
+}
 import Greetings from './components/Greetings';
 import SignupPage from './components/signup/SignupPage';
 import LoginPage from './components/login/LoginPage';
+import JobseekersLoginPage from './components/login/JobseekersLoginPage';
 import App from "./components/App";
+import JobseekersSignUpPage from "./components/signup/JobseekersSignUpPage";
+import JobseekersProfil from "./components/profil/JobseekersProfil";
 
 const MyApp = () => (
         <div>
@@ -54,6 +47,9 @@ const MyApp = () => (
                 <Greetings />
                 <Route path="/signup" component={SignupPage} />
                 <Route path="/login" component={LoginPage} />
+                <Route path="/jobseekers-login" component={JobseekersLoginPage} />
+                <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
+                <Route path="/jobseeler-profil" component={JobseekersProfil} />
             </App>
         </div>
 )

@@ -1,7 +1,13 @@
-import { SET_CURRENT_USER } from '../constans/auth.constans';
+import {
+    SET_CURRENT_USER,
+    SET_CURRENT_JOBSEEKER
+} from '../constans/auth.constans';
 import isEmpty from 'lodash/isEmpty';
 
 const initialState = {
+    jobseekersIsAuthenticated: false,
+    jobseekers: {},
+    jobseekersName:'',
     isAuthenticated: false,
     user: {}
 };
@@ -13,6 +19,13 @@ export default (state = initialState, action = {}) => {
                 isAuthenticated: !isEmpty(action.user),
                 user: action.user
             };
+        case SET_CURRENT_JOBSEEKER: {
+            return {
+                jobseekersIsAuthenticated: !isEmpty(action.jobseekers),
+                jobseekers: action.jobseekers,
+                jobseekersName : action.jobseekers.userName
+            };
+        }
         default: return state;
     }
 }

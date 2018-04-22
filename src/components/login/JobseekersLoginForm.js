@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from "../../utils/validations/login.validation"
 
-import { login } from '../../actions/auth.action';
+import { jobseekerLogin } from '../../actions/jobseeker.action';
 
-class LoginForm extends React.Component {
+class JobseekersLoginForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -34,7 +34,7 @@ class LoginForm extends React.Component {
         e.preventDefault();
         if (this.isValid()) {
             this.setState({ errors: {}, isLoading: true });
-            this.props.login(this.state).then(
+            this.props.jobseekerLogin(this.state).then(
                 (res) => this.context.router.history.push('/'),
                 (err) => {
                     if(err.response.status&& parseInt(err.response.status) === 404 ){
@@ -58,12 +58,12 @@ class LoginForm extends React.Component {
 
         return (
             <form onSubmit={this.onSubmit}>
-                <h1>Login</h1>
+                <h1>Jobseekers Login</h1>
                 { errors.response && <div className="alert alert-danger">{errors.response}</div> }
 
                 <TextFieldGroup
                     field="identifier"
-                    label="Username"
+                    label="Username / Email"
                     value={identifier}
                     error={errors.identifier}
                     onChange={this.onChange}
@@ -84,12 +84,14 @@ class LoginForm extends React.Component {
     }
 }
 
-LoginForm.propTypes = {
-    login: React.PropTypes.func.isRequired
+JobseekersLoginForm.propTypes = {
+    jobseekerLogin: React.PropTypes.func.isRequired
 }
 
-LoginForm.contextTypes = {
+JobseekersLoginForm.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
 
-export default connect(null, { login })(LoginForm);
+export default connect(null, { jobseekerLogin })(JobseekersLoginForm);
+
+

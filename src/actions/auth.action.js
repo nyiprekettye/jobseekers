@@ -18,10 +18,15 @@ export function logout() {
 
 export function login(data) {
     return dispatch => {
-        return axios.post('/api/user/login', data).then(res => {
-            const token = res.data.token;
-            localStorage.setItem('jwtToken', token);
-            dispatch(setCurrentUser(jwtDecode(token)));
-        });
+        return axios.post('/api/jobseekers/login', data)
+            .then(res => {
+                //console.log(res);
+                const token = res.data.access_token;
+                //console.log(token);
+                localStorage.setItem('jwtToken', token);
+                dispatch(setCurrentUser(jwtDecode(token)));
+            }).catch(error => {
+                    console.log(error)
+            });
     }
 }

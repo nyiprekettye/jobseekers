@@ -4,26 +4,28 @@ import isEmpty from 'lodash/isEmpty';
 export default function validateInput(data) {
     let errors = {};
 
-    if (Validator.isNull(data.username)) {
+    if (Validator.isEmpty(data.username)) {
         errors.username = 'This field is required';
     }
-    if (Validator.isNull(data.email)) {
+
+    if (Validator.isEmpty(data.email)) {
         errors.email = 'This field is required';
     }
+
     if (!Validator.isEmail(data.email)) {
         errors.email = 'Email is invalid';
     }
-    if (Validator.isNull(data.password)) {
+    if (Validator.isEmpty(data.pw)) {
         errors.password = 'This field is required';
     }
-    if (Validator.isNull(data.passwordConfirmation)) {
+    if (Validator.isEmpty(data.pw2)) {
         errors.passwordConfirmation = 'This field is required';
     }
-    if (!Validator.equals(data.password, data.passwordConfirmation)) {
+    if (!Validator.equals(data.pw, data.pw2)) {
         errors.passwordConfirmation = 'Passwords must match';
     }
-    if (Validator.isNull(data.timezone)) {
-        errors.timezone = 'This field is required';
+    if (Validator.isEmpty(data.city)) {
+        errors.city = 'This field is required';
     }
 
     return {

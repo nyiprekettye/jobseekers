@@ -7,7 +7,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 //var React = require('react')
 //var ReactDOM = require('react-dom')
-import user from './server/routes/user';
+import jobseekers from './server/routes/jobseekers';
 
 
 app.set('port', process.env.PORT || 8080);
@@ -23,12 +23,15 @@ app.use(session({
 }));
 
 
-app.use('/api/user', user);
+app.use('/api/jobseekers', jobseekers);
 
 app.get('/*', (req, res) => {
     console.log('Serving ', req.url);
     res.sendFile(__dirname + '/dist/app.html');
 });
+
+
+
 /*
 app.get('/', function (req, res) {
     res.send('Hello World')
