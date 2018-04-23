@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from "../../utils/validations/jobseekers.signup.validation"
 
-import { jobseekerSignUp } from '../../actions/jobseeker.action';
+import { jobseekerSignUp } from '../../actions/jobseeker.auth.action';
 
 class JobseekersSignUpForm extends React.Component {
     constructor(props) {

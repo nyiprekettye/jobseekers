@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.action';
+import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.auth.action';
 import {connect} from "react-redux";
 class JobseekersProfil extends React.Component {
 
@@ -78,6 +78,7 @@ class JobseekersProfil extends React.Component {
                 <div className="col-md-4 col-md-offset-4">
                     <span><strong>Eity : </strong>{this.state.city}</span>
                 </div>
+                <link to="/jobseeker-add-new-cv">Add new CV</link>
             </div>
         );
     }

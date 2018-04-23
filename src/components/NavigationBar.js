@@ -3,8 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../actions/auth.action';
-import { jobseekersLogout } from '../actions/jobseeker.action';
-import { companyLogout } from '../actions/company.action';
+import { jobseekersLogout } from '../actions/jobseeker.auth.action';
+import { companyLogout } from '../actions/company.auth.action';
 
 class NavigationBar extends React.Component {
     logout(e) {

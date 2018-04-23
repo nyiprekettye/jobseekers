@@ -13,8 +13,9 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './reducers/rootReducers';
 import jwtDecode from 'jwt-decode';
 import { setCurrentUser } from './actions/auth.action';
-import { setCurrentJobseeker } from './actions/jobseeker.action';
-import { setCurrentCompany } from './actions/company.action';
+import { setCurrentJobseeker } from './actions/jobseeker.auth.action';
+import { setCurrentCompany } from './actions/company.auth.action';
+import {jobseekerAddNewCV} from "./actions/jobseeker.CV.action";
 
 const store = createStore(
     rootReducer,
@@ -52,6 +53,7 @@ import App from "./components/App";
 import JobseekersSignUpPage from "./components/signup/JobseekersSignUpPage";
 import CompanySignUpPage from "./components/signup/CompanySignUpPage";
 import JobseekersProfil from "./components/profil/JobseekersProfil";
+import JobseekerAddNewCVPage from "./components/jobseeker/JobseekerAddNewCVPage";
 
 const MyApp = () => (
     <div>
@@ -62,6 +64,7 @@ const MyApp = () => (
             <Route path="/jobseekers-login" component={JobseekersLoginPage} />
             <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
             <Route path="/jobseeler-profil" component={JobseekersProfil} />
+            <Route path="/jobseeker-add-new-cv" component={JobseekerAddNewCVPage} />
             <Route path="/company-login" component={CompanyLoginPage} />
             <Route path="/company-signup" component={CompanySignUpPage} />
         </App>

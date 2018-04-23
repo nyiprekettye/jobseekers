@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from "../../utils/validations/company.signup.validation"
 
-import { companySignUp } from '../../actions/company.action';
+import { companySignUp } from '../../actions/company.auth.action';
 
 class CompanySignUpForm extends React.Component {
     constructor(props) {
