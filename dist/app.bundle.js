@@ -37239,6 +37239,8 @@ var _jobseekerAuth = __webpack_require__(36);
 
 var _reactRedux = __webpack_require__(20);
 
+var _reactRouterDom = __webpack_require__(122);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -37379,9 +37381,22 @@ var JobseekersProfil = function (_React$Component) {
                     )
                 ),
                 _react2.default.createElement(
-                    'link',
-                    { to: '/jobseeker-add-new-cv' },
-                    'Add new CV'
+                    'h1',
+                    null,
+                    'Linkek'
+                ),
+                _react2.default.createElement(
+                    'ul',
+                    { className: 'nav navbar-nav navbar-right' },
+                    _react2.default.createElement(
+                        'li',
+                        null,
+                        _react2.default.createElement(
+                            _reactRouterDom.Link,
+                            { to: '/' },
+                            'Home'
+                        )
+                    )
                 )
             );
         }

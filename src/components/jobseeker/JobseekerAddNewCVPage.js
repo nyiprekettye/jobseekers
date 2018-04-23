@@ -1,5 +1,4 @@
 import React from 'react';
-
 class JobseekerAddNewCVPage extends React.Component {
     render() {
         return (

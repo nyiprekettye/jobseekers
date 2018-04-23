@@ -1,8 +1,8 @@
 
 import React from 'react';
-
 import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.auth.action';
 import {connect} from "react-redux";
+import { Link } from 'react-router-dom';
 class JobseekersProfil extends React.Component {
 
     constructor(props) {
@@ -78,7 +78,10 @@ class JobseekersProfil extends React.Component {
                 <div className="col-md-4 col-md-offset-4">
                     <span><strong>Eity : </strong>{this.state.city}</span>
                 </div>
-                <link to="/jobseeker-add-new-cv">Add new CV</link>
+                <h1>Linkek</h1>
+                <ul className="nav navbar-nav navbar-right">
+                    <li><Link to="/">Home</Link></li>
+                </ul>
             </div>
         );
     }
