@@ -2,21 +2,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import TextFieldGroup from '../common/TextFieldGroup';
-import validateInput from "../../utils/validations/jobseekers.signup.validation"
+import validateInput from "../../utils/validations/company.signup.validation"
 
-import { jobseekerSignUp } from '../../actions/jobseeker.action';
+import { companySignUp } from '../../actions/company.action';
 
-class JobseekersSignUpForm extends React.Component {
+class CompanySignUpForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             username: 'asd',
-            email: 'asd',
+            name: 'company kft.',
+            email: 'asd@asd.com',
             pw: 'asd',
             pw2: 'asd',
-            city: 'asd',
-            errors: { asd:'asd'
-            },
+            tax_number: '1234',
+            city: 'Budapset',
+            fullAddress: '1234 Budapest Szeged utca 34.',
+            errors: {},
             isLoading: false
         };
 
@@ -30,7 +32,6 @@ class JobseekersSignUpForm extends React.Component {
         if (!isValid) {
             this.setState({ errors });
         }
-
         return isValid;
     }
 
@@ -40,18 +41,22 @@ class JobseekersSignUpForm extends React.Component {
         if (this.isValid()) {
             this.setState({ errors: {}, isLoading: true });
             const data ={
-                name :this.state.username,
+                username :this.state.username,
+                name :this.state.name,
                 email: this.state.email,
                 pw: this.state.pw,
-                city :this.state.city
+                tax_number: Number.parseInt(this.state.tax_number),
+                city :this.state.city,
+                fullAddress :this.state.fullAddress
             };
 
-            this.props.jobseekerSignUp(data)
+            this.props.companySignUp(data)
                 .then(
                     () => {
                         this.context.router.history.push('/jobseekers-login')
                     },
                     (err) => {
+                        console.log(err);
                         this.setState({ errors:{response: err.response.data}, isLoading: false })
                     }
                 );
@@ -65,10 +70,13 @@ class JobseekersSignUpForm extends React.Component {
     render() {
         const {
             username,
+            name,
             email,
             pw,
             pw2,
+            tax_number,
             city,
+            fullAddress,
             errors ,
             isLoading
         } = this.state;
@@ -83,6 +91,14 @@ class JobseekersSignUpForm extends React.Component {
                     label="Username"
                     value={username}
                     error={errors.username}
+                    onChange={this.onChange}
+                />
+
+                <TextFieldGroup
+                    field="name"
+                    label="Company name"
+                    value={name}
+                    error={errors.name}
                     onChange={this.onChange}
                 />
 
@@ -113,6 +129,15 @@ class JobseekersSignUpForm extends React.Component {
                 />
 
                 <TextFieldGroup
+                    field="tax_number"
+                    label="Tax Number"
+                    value={tax_number}
+                    error={errors.tax_number}
+                    onChange={this.onChange}
+                    type="number"
+                />
+
+                <TextFieldGroup
                     field="city"
                     label="City"
                     value={city}
@@ -120,18 +145,25 @@ class JobseekersSignUpForm extends React.Component {
                     onChange={this.onChange}
                 />
 
+                <TextFieldGroup
+                    field="fullAddress"
+                    label="Fully address"
+                    value={fullAddress}
+                    error={errors.fullAddress}
+                    onChange={this.onChange}
+                />
                 <div className="form-group"><button className="btn btn-primary btn-lg" disabled={isLoading}>Login</button></div>
             </form>
         );
     }
 }
 
-JobseekersSignUpForm.propTypes = {
-    jobseekerSignUp: React.PropTypes.func.isRequired
+CompanySignUpForm.propTypes = {
+    companySignUp: React.PropTypes.func.isRequired
 }
 
-JobseekersSignUpForm.contextTypes = {
+CompanySignUpForm.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
 
-export default connect(null, { jobseekerSignUp })(JobseekersSignUpForm);
+export default connect(null, { companySignUp })(CompanySignUpForm);

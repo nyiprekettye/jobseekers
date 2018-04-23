@@ -24,7 +24,7 @@ exports.authJobseekers = (user, pass, reqCodeMsg, callback) =>{
                 callback(404,reqCodeMsg[404]);
             }
             console.log("Sikeres kapcsolodas");
-            const sql ="SELECT ID, NAME, PASSWORD FROM h354618.JOBSEEKERS WHERE NAME = :name";
+            const sql ="SELECT ID, NAME, PASSWORD FROM JOBSEEKERS WHERE NAME = :name";
             console.log(sql);
             connection.execute(sql,[user]
                 ,(err, resp) => {
@@ -63,7 +63,7 @@ exports.authUserEmailAndName = (username, email, reqCodeMsg, callback) =>{
                 console.error(err);
                 callback(404,reqCodeMsg[404]);
             }
-            const sql ="SELECT * FROM h354618.JOBSEEKERS WHERE NAME LIKE :name OR EMAIL LIKE :email";
+            const sql ="SELECT * FROM JOBSEEKERS WHERE NAME LIKE :name OR EMAIL LIKE :email";
             if (debug)
                 console.log(sql);
             connection.execute(sql,[username, email]

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 //var React = require('react')
 //var ReactDOM = require('react-dom')
 import jobseekers from './server/routes/jobseekers';
+import company from './server/routes/company';
 
 
 app.set('port', process.env.PORT || 8080);
@@ -24,6 +25,7 @@ app.use(session({
 
 
 app.use('/api/jobseekers', jobseekers);
+app.use('/api/company', company);
 
 app.get('/*', (req, res) => {
     console.log('Serving ', req.url);

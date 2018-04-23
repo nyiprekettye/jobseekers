@@ -14,6 +14,7 @@ import rootReducer from './reducers/rootReducers';
 import jwtDecode from 'jwt-decode';
 import { setCurrentUser } from './actions/auth.action';
 import { setCurrentJobseeker } from './actions/jobseeker.action';
+import { setCurrentCompany } from './actions/company.action';
 
 const store = createStore(
     rootReducer,
@@ -29,29 +30,42 @@ if (localStorage.jwtToken) {
 
 if (localStorage.jobseekerJwtToken,localStorage.jobseekerName) {
     store.dispatch(setCurrentJobseeker({
-        token: jwtDecode(localStorage.jobseekerJwtToken),
+        //token: jwtDecode(localStorage.jobseekerJwtToken),
+        token: localStorage.jobseekerJwtToken,
         userName : localStorage.jobseekerName
     }));
 }
+if (localStorage.companyJwtToken,localStorage.companyName) {
+    store.dispatch(setCurrentCompany({
+        //token: jwtDecode(localStorage.jobseekerJwtToken),
+        token: localStorage.companyJwtToken,
+        userName : localStorage.companyName
+    }));
+}
+
 import Greetings from './components/Greetings';
 import SignupPage from './components/signup/SignupPage';
 import LoginPage from './components/login/LoginPage';
 import JobseekersLoginPage from './components/login/JobseekersLoginPage';
+import CompanyLoginPage from './components/login/CompanyLoginPage';
 import App from "./components/App";
 import JobseekersSignUpPage from "./components/signup/JobseekersSignUpPage";
+import CompanySignUpPage from "./components/signup/CompanySignUpPage";
 import JobseekersProfil from "./components/profil/JobseekersProfil";
 
 const MyApp = () => (
-        <div>
-            <App>
-                <Greetings />
-                <Route path="/signup" component={SignupPage} />
-                <Route path="/login" component={LoginPage} />
-                <Route path="/jobseekers-login" component={JobseekersLoginPage} />
-                <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
-                <Route path="/jobseeler-profil" component={JobseekersProfil} />
-            </App>
-        </div>
+    <div>
+        <App>
+            <Greetings />
+            <Route path="/signup" component={SignupPage} />
+            <Route path="/login" component={LoginPage} />
+            <Route path="/jobseekers-login" component={JobseekersLoginPage} />
+            <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
+            <Route path="/jobseeler-profil" component={JobseekersProfil} />
+            <Route path="/company-login" component={CompanyLoginPage} />
+            <Route path="/company-signup" component={CompanySignUpPage} />
+        </App>
+    </div>
 )
   
 
@@ -61,7 +75,6 @@ ReactDOM.render(
         <Router >
             <MyApp/>
         </Router>
-
     </Provider>, container);
 
 

@@ -3,10 +3,10 @@ const express = require('express');
 const jwt = require('jwt-simple');
 const secret = 'jwtuserTokensecret';
 const _ = require('underscore');
-const JobseekersAccountManager = require('../modules/jobseekers/jobseekers-account-manager');
+const companyAccountManager = require('../modules/company/company-account-manager');
 let router = express.Router();
 
-let userTokens = [];
+let companyTokens = [];
 
 function requiresAuthentication(request, response, next) {
     //console.log("["+ new Date()+"][check]: requiresAuthentication");
@@ -15,13 +15,13 @@ function requiresAuthentication(request, response, next) {
         let token = request.headers.access_token;
 
         //console.log(token);
-        if (_.where(userTokens, token).length > 0) {
+        if (_.where(companyTokens, token).length > 0) {
             let decodedToken = jwt.decode(token, secret);
             if (new Date(decodedToken.expires) > new Date()) {
                 next();
                 return;
             } else {
-                removeFromuserTokens(token);
+                removeFromcompanyTokens(token);
                 response.status(402).end("Your session is expired");
             }
         }else {
@@ -35,19 +35,19 @@ function requiresAuthentication(request, response, next) {
 
 }
 
-function removeFromuserTokens(token) {
-    for (let counter = 0; counter < userTokens.length; counter++) {
-        if (userTokens[counter] === token) {
-            userTokens.splice(counter, 1);
+function removeFromcompanyTokens(token) {
+    for (let counter = 0; counter < companyTokens.length; counter++) {
+        if (companyTokens[counter] === token) {
+            companyTokens.splice(counter, 1);
             break;
         }
     }
 }
 
-/**Jobseekers query*/
+/**Company query*/
 
 router.post('/login', function(request, response) {
-    console.log("["+ new Date()+"][POST]:/api/jbseekers/login");
+    console.log("["+ new Date()+"][POST]:/api/company/login");
 
     const reqCodeMsg = {
         '200': 'result'
@@ -68,42 +68,24 @@ router.post('/login', function(request, response) {
             const password = request.body.password
 
 
-            /*
-            let expires = new Date();
-            expires.setDate((new Date()).getDate() + 5); //current date +5 days
-            let token = jwt.encode({
-                id:2345,
-                userName: userName,
-                expires: expires,
-                secret2: password
-            }, secret);
-
-            //console.log(id);
-            userTokens.push(token);
-            response.status(200).json({ access_token: token, userName: userName });
-            */
-
-
-
-            JobseekersAccountManager.authJobseekers(userName, password, reqCodeMsg, function(e, o){
+            companyAccountManager.authCompany(userName, password, reqCodeMsg, function(e, o){
                 if (e === 200) {
                     let expires = new Date();
                     expires.setDate((new Date()).getDate() + 5); //current date +5 days
-                    let id = o;
+                    let id = o.ID;
+                    let NAME = o.NAME;
                     let token = jwt.encode({
                         id:id,
                         userName: userName,
                         expires: expires,
                         secret2: password
                     }, secret);
-
                     //console.log(id);
-                    userTokens.push(token);
-                    response.status(200).json({ access_token: token, userName: userName });
+                    companyTokens.push(token);
+                    response.status(200).json({ access_token: token, userName: userName, name:NAME });
                 }else {
                     response.status(e).json(o);
                 }
-
             });
         } else {
             console.log(request.body);
@@ -118,14 +100,14 @@ router.post('/login', function(request, response) {
 });
 
 router.post('/logout', requiresAuthentication, function(request, response) {
-    console.log("["+ new Date()+"][POST]:/api/jobseekers/logout");
+    console.log("["+ new Date()+"][POST]:/api/company/logout");
     const token= request.headers.access_token;
-    removeFromuserTokens(token);
+    removeFromcompanyTokens(token);
     response.status(200).send('ok');
 });
 
 router.post('/reg', function(request, response) {
-    console.log("["+ new Date()+"][POST]:/api/jobseekers registration");
+    console.log("["+ new Date()+"][POST]:/api/company registration");
 
     const reqCodeMsg = {
         '200': 'result'
@@ -138,21 +120,28 @@ router.post('/reg', function(request, response) {
     let errValues = [];
     let counter = 0;
 
+    if(!request.body.username){	errValues.push("err username");	}else { counter++; }
     if(!request.body.name){	errValues.push("err name");	}else { counter++; }
     if(!request.body.pw){	errValues.push("err pw");	}else { counter++; }
     if(!request.body.email){	errValues.push("err email");	}else { counter++; }
+    if(!request.body.tax_number){	errValues.push("err tax_number");	}else { counter++; }
     if(!request.body.city){	errValues.push("err city");	}else { counter++; }
+    if(!request.body.fullAddress){	errValues.push("err address");	}else { counter++; }
 
-    if((counter + errValues.length) === 4){
-        if(counter === 4){
-            const name = request.body.name;
-            const pw = request.body.pw;
-            const email = request.body.email;
-            const city = request.body.city;
+    if((counter + errValues.length) === 7){
+        if(counter === 7){
+            const data = {
+                username: request.body.username,
+                name : request.body.name,
+                email: request.body.email,
+                tax_number: request.body.tax_number,
+                city : request.body.city,
+                address:  request.body.address
+             };
 
-            JobseekersAccountManager.authUserEmailAndName(name,email, reqCodeMsg, function(e, o){
+            companyAccountManager.authUserEmailAndName(data.username,data.email, reqCodeMsg, function(e, o){
                 if (e === 201) {
-                    JobseekersAccountManager.regJobseeker( name, pw, email,city, reqCodeMsg, function(e, o){
+                    companyAccountManager.regCompany( data, reqCodeMsg, function(e, o){
                         if (e === 200) {
                             response.status(200).send("Sucessfully registrater!");
                         }else {
@@ -171,8 +160,11 @@ router.post('/reg', function(request, response) {
     }
 });
 
+
+
+ /*
 router.post('/jobseeker-data', requiresAuthentication, function(request, response) {
-    console.log("["+ new Date()+"][POST]:/api/jobseekers/user-data");
+    console.log("["+ new Date()+"][POST]:/api/company/user-data");
 
     const token = request.headers.access_token;
     const decodedToken = jwt.decode(token, secret);
@@ -184,6 +176,6 @@ router.post('/jobseeker-data', requiresAuthentication, function(request, respons
     };
     response.status(200).send(data);
 });
-
+*/
 
 module.exports = router;
