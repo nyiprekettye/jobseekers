@@ -81,6 +81,7 @@ class JobseekersProfil extends React.Component {
                 <h1>Linkek</h1>
                 <ul className="nav navbar-nav navbar-right">
                     <li><Link to="/">Home</Link></li>
+                    <li><Link to="/jobseeker-add-new-cv">/jobseeker-add-new-cv</Link></li>
                 </ul>
             </div>
         );
