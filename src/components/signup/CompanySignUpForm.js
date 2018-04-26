@@ -53,7 +53,7 @@ class CompanySignUpForm extends React.Component {
             this.props.companySignUp(data)
                 .then(
                     () => {
-                        this.context.router.history.push('/jobseekers-login')
+                        this.context.router.history.push('/company-login')
                     },
                     (err) => {
                         console.log(err);
@@ -83,7 +83,7 @@ class CompanySignUpForm extends React.Component {
 
         return (
             <form onSubmit={this.onSubmit}>
-                <h1>Jobseekers Sign Up</h1>
+                <h1>Company Sign Up</h1>
                 { errors.response && <div className="alert alert-danger">{errors.response}</div> }
 
                 <TextFieldGroup
@@ -152,7 +152,11 @@ class CompanySignUpForm extends React.Component {
                     error={errors.fullAddress}
                     onChange={this.onChange}
                 />
-                <div className="form-group"><button className="btn btn-primary btn-lg" disabled={isLoading}>Login</button></div>
+                <div className="form-group">
+                    <button className="btn btn-primary btn-lg" disabled={isLoading}>
+                        Reg. Company
+                    </button>
+                </div>
             </form>
         );
     }

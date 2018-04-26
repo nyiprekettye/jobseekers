@@ -42,6 +42,7 @@ class NavigationBar extends React.Component {
         const companyLinks= (
             <ul className="nav navbar-nav navbar-right">
                 <li><div className="navbar-brand">Welcome cég: {companyName}!</div></li>
+                <li><Link to="/company-profil">Company Profil</Link></li>
                 <li><a href="#" onClick={this.companyLogout.bind(this)}>Logout Company!</a></li>
             </ul>
         );
@@ -55,8 +56,8 @@ class NavigationBar extends React.Component {
         const guestLinks = (
             <ul className="nav navbar-nav navbar-right">
                 <li><div className="navbar-brand">Welcome {jobseekersName}!</div></li>
-                <li><Link to="/sigli>">Sign up</Link></li>
-                <li><Link to="/login">Login</Link></li>
+                <li><Link to="/sigli">Sign up</Link></li>
+                <li><Link to="/admin-login">admin-login</Link></li>
                 <li><Link to="/jobseekers-signup">jobseekers-Sign Up</Link></li>
                 <li><Link to="/jobseekers-login">jobseekers-login</Link></li>
                 <li><Link to="/company-signup">company-SignUp</Link></li>

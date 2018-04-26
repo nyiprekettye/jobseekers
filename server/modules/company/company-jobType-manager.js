@@ -10,7 +10,7 @@ function doRelease(connection) {
         });
 }
 
-exports.authAdmin = (user, pass, reqCodeMsg, callback) =>{
+exports.getJobTypes = (reqCodeMsg, callback) =>{
     oracledb.getConnection(
         {
             user          : dbConfig.user,
@@ -22,27 +22,19 @@ exports.authAdmin = (user, pass, reqCodeMsg, callback) =>{
                 console.error(err);
                 callback(404,reqCodeMsg[404]);
             } else {
-                console.log("Sikeres kapcsolodas");
-                const sql = "SELECT ID, USERNAME, PASSWORD FROM JOBSEEKERS_ADMIN WHERE USERNAME = :name";
-                //console.log(sql);
+                if(debug)
+                    console.log("Successfull create db connection");
+                const sql = "SELECT * FROM JOB_TYPE";
+                if(debug)
+                    console.log(sql);
                 connection.execute(sql, [user]
-                    ,(err, resp) => {
+                    , (err, resp) => {
                         doRelease(connection);
                         if (err) {
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
-                            if (resp.rows.length > 0) { // found jobseekers with this name
-                                if (resp.rows[0][2] === pass) { // the passworld is correct
-                                    console.log(resp.rows[0][0]);
-                                    callback(200, resp.rows[0][0]);
-
-                                } else {// the passworld doesnt match
-                                    callback(407, reqCodeMsg[407]);
-                                }
-                            } else { // doenst found jobseekers with this name
-                                callback(406, reqCodeMsg[406]);
-                            }
+                            callback(200, resp.rows);
                         }
                     });
             }

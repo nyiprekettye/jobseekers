@@ -3,16 +3,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from "../../utils/validations/login.validation"
+import {adminLogin} from "../../actions/admin.auth.action";
+import {companyLogIn} from "../../actions/company.auth.action";
 
-import { login } from '../../actions/auth.action';
-
-class LoginForm extends React.Component {
+class AdminLoginForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             identifier: '',
             password: '',
-            errors: {asd:"asd"},
+            errors: {},
             isLoading: false
         };
 
@@ -34,15 +34,21 @@ class LoginForm extends React.Component {
         e.preventDefault();
         if (this.isValid()) {
             this.setState({ errors: {}, isLoading: true });
-            this.props.login(this.state).then(
-                (res) => this.context.router.history.push('/'),
+            this.props.adminLogin(this.state).then(
+                (res) => {
+                    if (res.status === 200){
+                        this.context.router.history.push('/')
+                    }else {
+                        this.setState({errors: {response: res.request.response}, isLoading: false})
+                    }
+                },
                 (err) => {
                     if(err.response.status&& parseInt(err.response.status) === 404 ){
                         this.setState({ errors:{response: "server is not available"}, isLoading: false });
                     }else {
                         console.log("err in login form:")
                         console.log(err)
-                        this.setState({ errors:{from: err.response.data.errors}, isLoading: false })
+                        this.setState({ errors:{response: err.response.data.errors}, isLoading: false })
                     }
                 }
             );
@@ -58,12 +64,12 @@ class LoginForm extends React.Component {
 
         return (
             <form onSubmit={this.onSubmit}>
-                <h1>Login</h1>
+                <h1>Admin Login</h1>
                 { errors.response && <div className="alert alert-danger">{errors.response}</div> }
 
                 <TextFieldGroup
                     field="identifier"
-                    label="Username"
+                    label="Admin username:"
                     value={identifier}
                     error={errors.identifier}
                     onChange={this.onChange}
@@ -84,12 +90,15 @@ class LoginForm extends React.Component {
     }
 }
 
-LoginForm.propTypes = {
-    login: React.PropTypes.func.isRequired
+AdminLoginForm.propTypes = {
+    adminLogin: React.PropTypes.func.isRequired
 }
 
-LoginForm.contextTypes = {
+AdminLoginForm.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
 
-export default connect(null, { login })(LoginForm);
+export default connect(null, { adminLogin })(AdminLoginForm);
+
+
+

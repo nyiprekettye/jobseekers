@@ -35,13 +35,18 @@ class JobseekersLoginForm extends React.Component {
         if (this.isValid()) {
             this.setState({ errors: {}, isLoading: true });
             this.props.jobseekerLogin(this.state).then(
-                (res) => this.context.router.history.push('/'),
+                (res) => {
+                    //console.log(res);
+                    if (res.status === 200){
+                        this.context.router.history.push('/')
+                    }else {
+                        this.setState({ errors:{response: res.request.response}, isLoading: false });
+                    }
+                },
                 (err) => {
                     if(err.response.status&& parseInt(err.response.status) === 404 ){
                         this.setState({ errors:{response: "server is not available"}, isLoading: false });
                     }else {
-                        console.log("err in login form:")
-                        console.log(err)
                         this.setState({ errors:{from: err.response.data.errors}, isLoading: false })
                     }
                 }

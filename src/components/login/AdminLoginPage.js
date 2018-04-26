@@ -1,17 +1,17 @@
 
 import React from 'react';
-import LoginForm from './LoginForm';
+import AdminLoginForm from "./AdminLoginForm";
 
-class LoginPage extends React.Component {
+class AdminLoginPage extends React.Component {
     render() {
         return (
             <div className="row">
                 <div className="col-md-4 col-md-offset-4">
-                    <LoginForm />
+                    <AdminLoginForm/>
                 </div>
             </div>
         );
     }
 }
 
-export default LoginPage;
+export default AdminLoginPage;

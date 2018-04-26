@@ -21,33 +21,38 @@ exports.authJobseekers = (user, pass, reqCodeMsg, callback) =>{
         (err, connection) => {
             if (err) {
                 console.error(err);
-                callback(404,reqCodeMsg[404]);
-            }
-            console.log("Sikeres kapcsolodas");
-            const sql ="SELECT ID, NAME, PASSWORD FROM JOBSEEKERS WHERE NAME = :name";
-            console.log(sql);
-            connection.execute(sql,[user]
-                ,(err, resp) => {
-                    doRelease(connection);
-                    if (err) {
-                        console.error(err);
-                        callback(405,reqCodeMsg[405]);
-                    } else {
-                        console.log("sikeres lekérdezés");
-                        console.log(resp.rows[0]);
-                        if (resp.rows.length > 0){ // found jobseekers with this name
-                            if (resp.rows[0][2] === pass){ // the passworld is correct
-                                console.log(resp.rows[0][0]);
-                                callback(200,resp.rows[0][0]);
+                callback(404, reqCodeMsg[404]);
+            } else {
+                console.log("Connection:");
+                console.log(connection);
+                console.log("Err:");
+                console.log(err);
+                console.log("Sikeres kapcsolodas");
+                const sql = "SELECT ID, NAME, PASSWORD FROM JOBSEEKERS WHERE NAME = :name";
+                console.log(sql);
+                connection.execute(sql, [user]
+                    , (err, resp) => {
+                        doRelease(connection);
+                        if (err) {
+                            console.error(err);
+                            callback(405, reqCodeMsg[405]);
+                        } else {
+                            console.log("sikeres lekérdezés");
+                            console.log(resp.rows[0]);
+                            if (resp.rows.length > 0) { // found jobseekers with this name
+                                if (resp.rows[0][2] === pass) { // the passworld is correct
+                                    console.log(resp.rows[0][0]);
+                                    callback(200, resp.rows[0][0]);
 
-                            }else {// the passworld doesnt match
-                                callback(407,reqCodeMsg[407]);
+                                } else {// the passworld doesnt match
+                                    callback(407, reqCodeMsg[407]);
+                                }
+                            } else { // doenst found jobseekers with this name
+                                callback(406, reqCodeMsg[406]);
                             }
-                        }else { // doenst found jobseekers with this name
-                            callback(406,reqCodeMsg[406]);
                         }
-                    }
-                });
+                    });
+            }
         });
 };
 
@@ -62,28 +67,29 @@ exports.authUserEmailAndName = (username, email, reqCodeMsg, callback) =>{
             if (err) {
                 console.error(err);
                 callback(404,reqCodeMsg[404]);
-            }
-            const sql ="SELECT * FROM JOBSEEKERS WHERE NAME LIKE :name OR EMAIL LIKE :email";
-            if (debug)
-                console.log(sql);
-            connection.execute(sql,[username, email]
-                ,(err, resp) => {
-                    doRelease(connection);
-                    if (err) {
-                        console.error(err);
-                        callback(405,reqCodeMsg[405]);
-                    } else {
-                        if (debug)
-                            console.log("SUCCESFUL QUERY");
-                        if (debug)
-                        console.log(resp.rows);
-                        if (resp.rows.length > 0){ // found jobseekers with this name
-                            callback(406,reqCodeMsg[406]);
-                        }else { // doenst found jobseekers with this name
-                            callback(201,reqCodeMsg[201]);
+            } else {
+                const sql = "SELECT * FROM JOBSEEKERS WHERE NAME LIKE :name OR EMAIL LIKE :email";
+                if (debug)
+                    console.log(sql);
+                connection.execute(sql, [username, email]
+                    , (err, resp) => {
+                        doRelease(connection);
+                        if (err) {
+                            console.error(err);
+                            callback(405, reqCodeMsg[405]);
+                        } else {
+                            if (debug)
+                                console.log("SUCCESFUL QUERY");
+                            if (debug)
+                                console.log(resp.rows);
+                            if (resp.rows.length > 0) { // found jobseekers with this name
+                                callback(406, reqCodeMsg[406]);
+                            } else { // doenst found jobseekers with this name
+                                callback(201, reqCodeMsg[201]);
+                            }
                         }
-                    }
-                });
+                    });
+            }
         });
 };
 
@@ -100,22 +106,25 @@ exports.regJobseeker = (name, pw, email,city, reqCodeMsg, callback) =>{
             if (err) {
                 console.error(err);
                 callback(404,reqCodeMsg[404]);
+            } else {
+
+
+                const sql = `select JOBSEEKERS_INSERT_FUNC(:name, :email, :pw, :city) from dual`;
+                if (debug)
+                    console.log(sql);
+                connection.execute(sql, [name, email, pw, city]
+                    , (err, rows) => {
+                        doRelease(connection);
+                        if (err) {
+                            console.error(err);
+                            callback(405, reqCodeMsg[405]);
+                        } else {
+                            if (debug)
+                                console.log(rows['rows'][0][0]);
+                            callback(200, reqCodeMsg[200]);
+                        }
+                    });
             }
-            const sql =`select JOBSEEKERS_INSERT_FUNC(:name, :email, :pw, :city) from dual`;
-            if (debug)
-                console.log(sql);
-            connection.execute(sql,[name, email, pw, city]
-                ,(err, rows) => {
-                    doRelease(connection);
-                    if (err) {
-                        console.error(err);
-                        callback(405,reqCodeMsg[405]);
-                    }else {
-                        if (debug)
-                            console.log(rows['rows'][0][0]);
-                        callback(200,reqCodeMsg[200]);
-                    }
-                });
         });
 };
 

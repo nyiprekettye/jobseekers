@@ -23,10 +23,10 @@ export function companyLogIn(data) {
     return dispatch => {
         return axios.post('/api/company/login', data)
             .then(res => {
-                console.log(res);
+                //console.log(res);
                 const token = res.data.access_token;
                 const name = res.data.name;
-                console.log(name);
+                //console.log(name);
                 //console.log(token);
                 localStorage.setItem('companyJwtToken', token);
                 localStorage.setItem('companyName', name);
@@ -34,7 +34,7 @@ export function companyLogIn(data) {
                 dispatch(setCurrentCompany({token: token, name : name}));
                 return res;
             }).catch(error => {
-                console.log(error)
+                //console.log(error)
                 return error;
             });
     }
@@ -58,6 +58,6 @@ export function companyGetData(token) {
     };
 
     return dispatch => {
-        return axios.post('/api/company/company-data',postData,axiosConfig  );
+        return axios.post('/api/company/get-company-data',postData,axiosConfig  );
     };
 }

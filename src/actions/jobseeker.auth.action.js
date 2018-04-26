@@ -31,9 +31,10 @@ export function jobseekerLogin(data) {
                 localStorage.setItem('jobseekerName', userName);
                 //dispatch(setCurrentJobseeker({token: jwtDecode(token), userName : userName}));
                 dispatch(setCurrentJobseeker({token: token, userName : userName}));
+                return res;
             }).catch(error => {
-                console.log(error)
-
+                //console.log(error)
+                return error
             });
     }
 }

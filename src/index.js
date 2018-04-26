@@ -15,8 +15,6 @@ import jwtDecode from 'jwt-decode';
 import { setCurrentUser } from './actions/auth.action';
 import { setCurrentJobseeker } from './actions/jobseeker.auth.action';
 import { setCurrentCompany } from './actions/company.auth.action';
-import {jobseekerAddNewCV} from "./actions/jobseeker.CV.action";
-
 const store = createStore(
     rootReducer,
     compose(
@@ -46,27 +44,36 @@ if (localStorage.companyJwtToken,localStorage.companyName) {
 
 import Greetings from './components/Greetings';
 import SignupPage from './components/signup/SignupPage';
-import LoginPage from './components/login/LoginPage';
 import JobseekersLoginPage from './components/login/JobseekersLoginPage';
 import CompanyLoginPage from './components/login/CompanyLoginPage';
 import App from "./components/App";
 import JobseekersSignUpPage from "./components/signup/JobseekersSignUpPage";
 import CompanySignUpPage from "./components/signup/CompanySignUpPage";
 import JobseekersProfil from "./components/profil/JobseekersProfil";
+import CompanyProfil from "./components/profil/CompanyProfil";
 import JobseekerAddNewCVPage from "./components/jobseeker/JobseekerAddNewCVPage";
+
+import AdminLoginPage from "./components/login/AdminLoginPage";
+import CompanyAddNewJobAdvertisment from "./components/company/CompanyAddNewJobAdvertisement";
 
 const MyApp = () => (
     <div>
         <App>
             <Greetings />
             <Route path="/signup" component={SignupPage} />
-            <Route path="/login" component={LoginPage} />
             <Route path="/jobseekers-login" component={JobseekersLoginPage} />
             <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
             <Route path="/jobseeler-profil" component={JobseekersProfil} />
             <Route path="/jobseeker-add-new-cv" component={JobseekerAddNewCVPage} />
+
             <Route path="/company-login" component={CompanyLoginPage} />
             <Route path="/company-signup" component={CompanySignUpPage} />
+            <Route path="/company-profil" component={CompanyProfil} />
+            <Route path="/company-add-new-advertisment" component={CompanyAddNewJobAdvertisment} />
+
+            <Route path="/admin-login" component={AdminLoginPage} />
+
+
         </App>
     </div>
 )

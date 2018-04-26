@@ -1,7 +1,8 @@
 import {
     SET_CURRENT_USER,
     SET_CURRENT_JOBSEEKER,
-    SET_CURRENT_COMPANY
+    SET_CURRENT_COMPANY,
+    SET_CURRENT_ADMIN
 } from '../constans/auth.constans';
 import isEmpty from 'lodash/isEmpty';
 
@@ -13,7 +14,10 @@ const initialState = {
     company: {},
     companyName:'',
     isAuthenticated: false,
-    user: {}
+    user: {},
+    adminIsAuthenticated: false,
+    admin: {}
+
 };
 
 export default (state = initialState, action = {}) => {
@@ -35,6 +39,12 @@ export default (state = initialState, action = {}) => {
                 companyIsAuthenticated: !isEmpty(action.company),
                 company: action.company,
                 companyName : action.company.name
+            };
+        }
+        case SET_CURRENT_ADMIN: {
+            return {
+                adminIsAuthenticated: !isEmpty(action.admin),
+                admin: action.admin
             };
         }
         default: return state;

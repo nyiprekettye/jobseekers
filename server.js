@@ -9,11 +9,13 @@ const bodyParser = require('body-parser');
 //var ReactDOM = require('react-dom')
 import jobseekers from './server/routes/jobseekers';
 import company from './server/routes/company';
+import admin from './server/routes/admin';
 
 
 app.set('port', process.env.PORT || 8080);
 app.set('jwtTokenSecret', '123456ABCDEF');
 app.use(express.static(path.join(__dirname, './dist')));
+app.use(express.static(path.join(__dirname + 'company/', './dist')));
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(session({
@@ -26,19 +28,12 @@ app.use(session({
 
 app.use('/api/jobseekers', jobseekers);
 app.use('/api/company', company);
+app.use('/api/admin', admin);
 
 app.get('/*', (req, res) => {
     console.log('Serving ', req.url);
     res.sendFile(__dirname + '/dist/app.html');
 });
-
-
-
-/*
-app.get('/', function (req, res) {
-    res.send('Hello World')
-});
-*/
 
 http.createServer(app).listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));

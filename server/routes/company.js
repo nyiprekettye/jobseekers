@@ -4,6 +4,8 @@ const jwt = require('jwt-simple');
 const secret = 'jwtuserTokensecret';
 const _ = require('underscore');
 const companyAccountManager = require('../modules/company/company-account-manager');
+const companyJobTypeManager = require('../modules/company/company-jobType-manager');
+const companyAdvertisementManager = require('../modules/company/company-advertisement-manager');
 let router = express.Router();
 
 let companyTokens = [];
@@ -84,7 +86,21 @@ router.post('/login', function(request, response) {
                     companyTokens.push(token);
                     response.status(200).json({ access_token: token, userName: userName, name:NAME });
                 }else {
-                    response.status(e).json(o);
+                    //response.status(e).json(o);
+                    console.log(o);
+                    console.log("Cant got data from database, but i send tes data");
+                    let expires = new Date();
+                    expires.setDate((new Date()).getDate() + 5); //current date +5 days
+                    let token = jwt.encode({
+                        id:1,
+                        userName: userName,
+                        expires: expires,
+                        secret2: password
+                    }, secret);
+                    //console.log(id);
+                    companyTokens.push(token);
+                    response.status(200).json({ access_token: token, userName: userName, name:"Company name" });
+
                 }
             });
         } else {
@@ -115,7 +131,7 @@ router.post('/reg', function(request, response) {
         ,'404': '[registration]: cant connect to database'
         ,'405': '[registration]:  query throw error'
         ,'406': '[registration]: userName or email already exist'
-        ,'407': '[login]: didnt get enought parameters'
+        ,'407': '[registration]: didnt get enought parameters'
     };
     let errValues = [];
     let counter = 0;
@@ -133,10 +149,11 @@ router.post('/reg', function(request, response) {
             const data = {
                 username: request.body.username,
                 name : request.body.name,
+                pw : request.body.pw,
                 email: request.body.email,
                 tax_number: request.body.tax_number,
                 city : request.body.city,
-                address:  request.body.address
+                address:  request.body.fullAddress
              };
 
             companyAccountManager.authUserEmailAndName(data.username,data.email, reqCodeMsg, function(e, o){
@@ -160,22 +177,138 @@ router.post('/reg', function(request, response) {
     }
 });
 
+router.post('/get-company-data', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-company-data");
 
-
- /*
-router.post('/jobseeker-data', requiresAuthentication, function(request, response) {
-    console.log("["+ new Date()+"][POST]:/api/company/user-data");
-
-    const token = request.headers.access_token;
-    const decodedToken = jwt.decode(token, secret);
-
-    let data = {
-        email:"email",
-        username: decodedToken.userName,
-        city: "varos"
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-company-data]: userName not exist'
+        ,'404': '[get-company-data]: cant connect to database'
+        ,'405': '[get-company-data]:  query throw error'
     };
-    response.status(200).send(data);
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+    companyAccountManager.getCompanyData( company_id,  reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send(o);
+        }else {
+
+            // response.status(e).send(o);
+            let data = {
+                id: decodedToken.id,
+                name:decodedToken.name,
+                usenname : decodedToken.userName
+            };
+            console.log(o);
+            console.log('But sent test data!');
+            response.status(200).send(data);
+        }
+    });
 });
-*/
+
+router.post('/get-job-types', /*requiresAuthentication, */ function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-job-types");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-job-types]: userName not exist'
+        ,'404': '[get-job-types]: cant connect to database'
+        ,'405': '[get-job-types]:  query throw error'
+    };
+
+    companyJobTypeManager.getJobTypes(  reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send("Sucessfully registrater!");
+        }else {
+
+            // response.status(e).send(o);
+            let data = [
+                 {id:1,name:'IT melo'},
+                 {id:2,name:'fizikai'},
+                 {id:3,name:'Biosz'},
+                 {id:4,name:'Irodai'}
+            ];
+            console.log(o);
+            console.log('But sent test data!');
+            response.status(200).send(data);
+        }
+    });
+});
+
+router.post('/new-advertisement', function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/new-advertisement");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[new-advertisement]: userName not exist'
+        ,'404': '[new-advertisement]: cant connect to database'
+        ,'405': '[new-advertisement]:  query throw error'
+        ,'407': '[new-advertisement]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.name){	errValues.push("err name");	}else { counter++; }
+    if(!request.body.city){	errValues.push("err city");	}else { counter++; }
+    if(!request.body.description){	errValues.push("err description");	}else { counter++; }
+    if(!request.body.current_job_type){	errValues.push("err current_job_type");	}else { counter++; }
+
+    if((counter + errValues.length) === 4){
+        if(counter === 4){
+            const data = {
+                name: request.body.name,
+                city : request.body.city,
+                description : request.body.description,
+                job_type_id: request.body.current_job_type
+            };
+            console.log(data);
+            companyAdvertisementManager.insertNewAdvertisement( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Sucessfully registrater!");
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/get-job-advertisements', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-job-advertisements");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-job-advertisements]: userName not exist'
+        ,'404': '[get-job-advertisements]: cant connect to database'
+        ,'405': '[get-job-advertisements]:  query throw error'
+    };
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+    companyAdvertisementManager.getAdvertisementByCompanyId( company_id, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send("Sucessfully registrater!");
+        }else {
+
+            // response.status(e).send(o);
+            let data = [
+            ];
+            console.log(o);
+            console.log('But sent test data!');
+            response.status(200).send(data);
+        }
+    });
+});
+
 
 module.exports = router;
