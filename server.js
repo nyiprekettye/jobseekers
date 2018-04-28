@@ -30,6 +30,11 @@ app.use('/api/jobseekers', jobseekers);
 app.use('/api/company', company);
 app.use('/api/admin', admin);
 
+app.get('/*app.bundle.js', (req, res) => {
+    console.log('Serving app.bundle.js: ', req.url);
+    res.sendFile(__dirname + '/dist/app.bundle.js');
+});
+
 app.get('/*', (req, res) => {
     console.log('Serving ', req.url);
     res.sendFile(__dirname + '/dist/app.html');

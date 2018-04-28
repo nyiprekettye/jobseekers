@@ -36,7 +36,7 @@ class CompanyLoginForm extends React.Component {
             this.setState({ errors: {}, isLoading: true });
             this.props.companyLogIn(this.state).then(
                 (res) => {
-                    console.log(res);
+                    //console.log(res);
                     if (res.status === 200){
 
                         this.context.router.history.push('/')

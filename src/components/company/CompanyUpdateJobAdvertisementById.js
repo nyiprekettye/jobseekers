@@ -1,65 +1,75 @@
+
 import React from 'react';
+import { companyLogout} from '../../actions/company.auth.action';
+import {getAdvertisementById, updateAdvertisementById} from '../../actions/company.jobAdvertisement.action';
 import {connect} from "react-redux";
-import {companyLogout} from "../../actions/company.auth.action"
-import {getJobTypes} from '../../actions/company.jobType.action'
-import {companyNewAdvertisement} from '../../actions/company.jobAdvertisement.action'
+import { Link } from 'react-router-dom';
+import classnames from "classnames";
+import validateInput from "../../utils/validations/company.updateAdvertisement.validation";
 import TextFieldGroup from '../common/TextFieldGroup';
 import TextareaFieldGroup from '../common/TextareaFieldGroup';
-import validateInput from "../../utils/validations/company.newJobAdvertisement.validation";
-import classnames from "classnames";
-class CompanyAddNewJobAdvertisement extends React.Component {
+class CompanyUpdateJobAdvertisementById extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            name: 'It állás',
-            city: 'Szeged',
-            description: 'description value',
-            current_job_type:'-1',
-            job_types :[],
-            errors: {},
-            loadingJobAdvertisment:'initial',
-            isLoading: false
+            advertismenet_id: this.props.match.params.id,
+            advertisement : [],
+            loading_advertisiemet: 'initial',
+            errors:{},
+            isLoading: false,
+            name : '',
+            city : '',
+            description: ''
         };
+
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
     }
 
-    componentDidMount() {
-        this.setState({ loadingJobAdvertisment: 'true' });
-        this.loadJobTypeData()
-            .then((resData) => {
-                this.setState({
-                    job_types:JSON.parse(resData.request.response),
-                    loadingJobAdvertisment: 'false'
-                })
-            },(err) => {
-                this.setState({
-                    loadingJobAdvertisment: 'false'
-                })
-                console.log(err);
-                this.props.companyLogout();
-                //this.context.router.history.push('/');
-            })
-    }
-
-    loadJobTypeData() {
+    loadData() {
         let promise = new Promise((resolve, reject) => {
             const { company } = this.props.auth;
-            this.props.getJobTypes(company.token).then(
+            this.props.getAdvertisementById(
+                {advertismenet_id:this.state.advertismenet_id},
+                company.token
+            ).then(
                 (resData) => {
-                    //  resolve(res);
+                    //console.log(resData.data);
+                    this.setState({
+                        name:resData.data[0],
+                        description:resData.data[1],
+                        city:resData.data[2],
+                        loading_advertisiemet: 'false'
+                    });
                     //console.log(this.state);
-                    resolve(resData);
+                    resolve('This is my data.');
                 },
-                (err) => {
-                    reject(err)
+                (err2) => {
+                    reject(err2)
                 }
             );
+
+
         });
 
         return promise;
     }
+
+    componentDidMount() {
+
+        this.setState({ loading: 'true' });
+        this.loadData()
+            .then((resData) => {
+                //console.log(this.state);
+            },(err) => {
+                console.log(err)
+                this.props.companyLogout();
+                this.context.router.history.push('/');
+            });
+    }
+
 
     isValid() {
         const { errors, isValid } = validateInput(this.state);
@@ -74,16 +84,18 @@ class CompanyAddNewJobAdvertisement extends React.Component {
     onSubmit(e) {
         e.preventDefault();
         if (this.isValid()) {
+            console.log(this.state);
             //this.setState({ errors: {}, isLoading: true });
+
             console.log(this.state);
             const { company } = this.props.auth;
             const data = {
+                advertismenet_id: this.state.advertismenet_id,
                 name : this.state.name,
                 description : this.state.description,
-                city : this.state.city,
-                current_job_type: this.state.current_job_type
+                city : this.state.city
             }
-            this.props.companyNewAdvertisement(company.token, data).then(
+            this.props.updateAdvertisementById(data, company.token).then(
                 (res) => {
                     console.log(res);
                     if (res.status === 200){
@@ -117,21 +129,21 @@ class CompanyAddNewJobAdvertisement extends React.Component {
 
     render() {
 
-        if (this.state.loadingJobAdvertisment === 'initial') {
+        if (this.state.loading_advertisiemet === 'initial') {
             return <h2>Intializing...</h2>;
         }
 
 
-        if (this.state.loadingJobAdvertisment === 'true') {
+        if (this.state.loading_advertisiemet === 'true') {
             return <h2>Loading...</h2>;
         }
-        const { errors, name, city, job_types, current_job_type,description,isLoading } = this.state;
+        const {name, description, city, errors, isLoading} =  this.state;
+
 
         return (
-            <div className="row">
-
+            <div className="col-md-10 col-md-offset-1">
                 <form onSubmit={this.onSubmit}>
-                    <h1>Company add new advertisment </h1>
+                    <h1>Company update Advertisement</h1>
                     { errors.response && <div className="alert alert-danger">{errors.response}</div> }
 
                     <TextFieldGroup
@@ -141,28 +153,6 @@ class CompanyAddNewJobAdvertisement extends React.Component {
                         error={errors.name}
                         onChange={this.onChange}
                     />
-
-                    <div className={classnames('form-group', { 'has-error': errors.current_job_type })}>
-                        <label className="control-label">Job Types</label>
-                        <select onChange={this.onChange}
-                                value={current_job_type}
-                                name="current_job_type">
-                            {console.log(job_types)}
-                            <option value='-1'>Select</option>
-                            {
-                                job_types.map(job_type =>
-                                    <option key={job_type[0]} value={job_type[0]}>
-                                        {job_type[1]}
-                                    </option>
-                                )
-                            }
-                        </select>
-                        {
-                            errors.current_job_type && <span className="help-block">
-                                {errors.current_job_type}
-                            </span>
-                        }
-                    </div>
 
                     <TextFieldGroup
                         field="city"
@@ -182,26 +172,25 @@ class CompanyAddNewJobAdvertisement extends React.Component {
 
 
                     <div className="form-group">
-                        <button className="btn btn-primary btn-lg" disabled={isLoading}>
-                            New job advertisment
+                        <button className="btn btn-warning" disabled={isLoading}>
+                            Update advertisment
                         </button>
                     </div>
                 </form>
             </div>
         );
+
     }
 }
-
-CompanyAddNewJobAdvertisement.propTypes = {
-    getJobTypes: React.PropTypes.func.isRequired,
+CompanyUpdateJobAdvertisementById.propTypes = {
     companyLogout: React.PropTypes.func.isRequired,
-    companyNewAdvertisement: React.PropTypes.func.isRequired
+    getAdvertisementById: React.PropTypes.func.isRequired,
+    updateAdvertisementById: React.PropTypes.func.isRequired
 }
 
-CompanyAddNewJobAdvertisement.contextTypes = {
+CompanyUpdateJobAdvertisementById.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
-
 
 function mapStateToProps(state) {
     return {
@@ -210,8 +199,11 @@ function mapStateToProps(state) {
 }
 
 
-export default connect(mapStateToProps,{
-    getJobTypes,
+export default connect(mapStateToProps, {
     companyLogout,
-    companyNewAdvertisement
-})(CompanyAddNewJobAdvertisement);
+    getAdvertisementById ,
+    updateAdvertisementById
+})(CompanyUpdateJobAdvertisementById);
+
+
+

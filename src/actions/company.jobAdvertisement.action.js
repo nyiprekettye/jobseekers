@@ -31,3 +31,45 @@ export function getAdvertisements(token) {
         return axios.post('/api/company/get-job-advertisements',data,axiosConfig );
     };
 }
+export function updateAdvertisementArchiveState(data,token) {
+    //console.log(token);
+
+    let axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return dispatch => {
+        return axios.post('/api/company/update-advertisement-archive-row',data,axiosConfig );
+    };
+}
+
+export function getAdvertisementById(data,token) {
+    //console.log(token);
+
+    let axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return dispatch => {
+        return axios.post('/api/company/get-advertisement-by-id',data,axiosConfig );
+    };
+}
+
+
+export function updateAdvertisementById(data,token) {
+    //console.log(token);
+
+    let axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return dispatch => {
+        return axios.post('/api/company/update-advertisement-by-id',data,axiosConfig );
+    };
+}

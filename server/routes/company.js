@@ -7,7 +7,7 @@ const companyAccountManager = require('../modules/company/company-account-manage
 const companyJobTypeManager = require('../modules/company/company-jobType-manager');
 const companyAdvertisementManager = require('../modules/company/company-advertisement-manager');
 let router = express.Router();
-
+const databaseOfflineMode = true;
 let companyTokens = [];
 
 function requiresAuthentication(request, response, next) {
@@ -86,21 +86,23 @@ router.post('/login', function(request, response) {
                     companyTokens.push(token);
                     response.status(200).json({ access_token: token, userName: userName, name:NAME });
                 }else {
-                    //response.status(e).json(o);
-                    console.log(o);
-                    console.log("Cant got data from database, but i send tes data");
-                    let expires = new Date();
-                    expires.setDate((new Date()).getDate() + 5); //current date +5 days
-                    let token = jwt.encode({
-                        id:1,
-                        userName: userName,
-                        expires: expires,
-                        secret2: password
-                    }, secret);
-                    //console.log(id);
-                    companyTokens.push(token);
-                    response.status(200).json({ access_token: token, userName: userName, name:"Company name" });
-
+                    if (databaseOfflineMode) {
+                        console.log(o);
+                        console.log("Cant got data from database, but i send tes data");
+                        let expires = new Date();
+                        expires.setDate((new Date()).getDate() + 5); //current date +5 days
+                        let token = jwt.encode({
+                            id: 1,
+                            userName: userName,
+                            expires: expires,
+                            secret2: password
+                        }, secret);
+                        //console.log(id);
+                        companyTokens.push(token);
+                        response.status(200).json({access_token: token, userName: userName, name: "Company name"});
+                    }else {
+                        response.status(e).json(o);
+                    }
                 }
             });
         } else {
@@ -191,18 +193,33 @@ router.post('/get-company-data', requiresAuthentication,  function(request, resp
     const company_id = decodedToken.id;
     companyAccountManager.getCompanyData( company_id,  reqCodeMsg, function(e, o){
         if (e === 200) {
-            response.status(200).send(o);
-        }else {
-
-            // response.status(e).send(o);
             let data = {
                 id: decodedToken.id,
-                name:decodedToken.name,
-                usenname : decodedToken.userName
+                name: o[0],
+                username: decodedToken.userName,
+                email: o[2],
+                tax_number : o[5],
+                city: o[4],
+                address: o[3],
             };
-            console.log(o);
-            console.log('But sent test data!');
             response.status(200).send(data);
+        }else {
+            if (databaseOfflineMode) {
+                let data = {
+                    id: decodedToken.id,
+                    name: "Company kft",
+                    username: decodedToken.userName,
+                    email: "asd@asd.asd",
+                    tax_number : "123123124123",
+                    city: " Szeged",
+                    address: " Szeged béka u. 34.",
+                };
+                console.log(o);
+                console.log('But sent test data!');
+                response.status(200).send(data);
+            }else {
+                response.status(e).send(o);
+            }
         }
     });
 });
@@ -219,24 +236,27 @@ router.post('/get-job-types', /*requiresAuthentication, */ function(request, res
 
     companyJobTypeManager.getJobTypes(  reqCodeMsg, function(e, o){
         if (e === 200) {
-            response.status(200).send("Sucessfully registrater!");
+            //console.log(o)
+            response.status(200).send(o);
         }else {
-
-            // response.status(e).send(o);
-            let data = [
-                 {id:1,name:'IT melo'},
-                 {id:2,name:'fizikai'},
-                 {id:3,name:'Biosz'},
-                 {id:4,name:'Irodai'}
-            ];
-            console.log(o);
-            console.log('But sent test data!');
-            response.status(200).send(data);
+            if (databaseOfflineMode) {
+                let data = [ [ 1, 'Informatikai' ],
+                    [ 2, 'Fizikai' ],
+                    [ 3, 'Irodai' ],
+                    [ 4, 'Gyári' ],
+                    [ 5, 'Könyvelő' ],
+                    [ 6, 'Biológiai' ] ];
+                console.log(o);
+                console.log('But sent test data!');
+                response.status(200).send(data);
+            }else {
+                response.status(e).send(o);
+            }
         }
     });
 });
 
-router.post('/new-advertisement', function(request, response) {
+router.post('/new-advertisement', requiresAuthentication, function(request, response) {
     console.log("["+ new Date()+"][POST]:/api/company/new-advertisement");
 
     const reqCodeMsg = {
@@ -253,10 +273,14 @@ router.post('/new-advertisement', function(request, response) {
     if(!request.body.city){	errValues.push("err city");	}else { counter++; }
     if(!request.body.description){	errValues.push("err description");	}else { counter++; }
     if(!request.body.current_job_type){	errValues.push("err current_job_type");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
 
     if((counter + errValues.length) === 4){
         if(counter === 4){
             const data = {
+                company_id:company_id,
                 name: request.body.name,
                 city : request.body.city,
                 description : request.body.description,
@@ -297,17 +321,184 @@ router.post('/get-job-advertisements', requiresAuthentication,  function(request
     const company_id = decodedToken.id;
     companyAdvertisementManager.getAdvertisementByCompanyId( company_id, reqCodeMsg, function(e, o){
         if (e === 200) {
-            response.status(200).send("Sucessfully registrater!");
+            //console.log(o);
+            response.status(200).send(o);
         }else {
 
-            // response.status(e).send(o);
-            let data = [
-            ];
-            console.log(o);
-            console.log('But sent test data!');
-            response.status(200).send(data);
+            if (databaseOfflineMode){
+                let data = [
+                    [ 5, 8,  'Informatikai','It állás','description value','Szeged','2018-04-27T09:48:33.000Z',0,0 ],
+                    [ 3, 8, 'Informatikai', 'name', 'desc', 'city', '2018-04-27T09:12:29.000Z', 0, 1 ],
+                    [ 4, 8, 'Informatikai', 'name', 'desc', 'city', '2018-04-27T09:45:54.000Z', 1, 0 ],
+                    [ 4, 8, 'Informatikai', 'name', 'desc', 'city', '2018-04-27T09:45:54.000Z', -1, 0 ]
+                ];
+                console.log(o);
+                console.log('But sent test data!');
+                response.status(200).send(data);
+            } else {
+                response.status(e).send(o);
+            }
         }
     });
+});
+
+router.post('/get-advertisement-by-id', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-advertisement-by-id");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-advertisement-by-id]: userName not exist'
+        ,'404': '[get-advertisement-by-id]: cant connect to database'
+        ,'405': '[get-advertisement-by-id]:  query throw error'
+        ,'407': '[get-advertisement-by-id]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.advertismenet_id){	errValues.push("err advertismenet_id");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                company_id:company_id,
+                advertismenet_id: request.body.advertismenet_id
+            };
+            console.log(data);
+            companyAdvertisementManager.getAdvertisementByCompanyId( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Sucessfully get advertisement!");
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = [
+                            "hirdetés neve",
+                            "hirdetés leírás",
+                            "Szeged"
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/update-advertisement-by-id', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/update-advertisement-by-id");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[update-advertisement-by-id]: userName not exist'
+        ,'404': '[update-advertisement-by-id]: cant connect to database'
+        ,'405': '[update-advertisement-by-idget-advertisement-by-id]:  query throw error'
+        ,'407': '[update-advertisement-by-id]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.advertismenet_id){	errValues.push("err advertismenet_id");	}else { counter++; }
+    if(!request.body.name){	errValues.push("err name");	}else { counter++; }
+    if(!request.body.description){	errValues.push("err description");	}else { counter++; }
+    if(!request.body.city){	errValues.push("err city");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 4){
+        if(counter === 4){
+            const data = {
+                company_id:company_id,
+                advertismenet_id: request.body.advertismenet_id,
+                name: request.body.name,
+                description: request.body.description,
+                city: request.body.city
+            };
+            console.log(data);
+            companyAdvertisementManager.updateAdvertisementById( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Update");
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = ['ok'
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/update-advertisement-archive-row', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/update-advertisement-archive-row");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[update-advertisement-archive-row]: userName not exist'
+        ,'404': '[update-advertisement-archive-row]: cant connect to database'
+        ,'405': '[update-advertisement-archive-row]:  query throw error'
+        ,'407': '[update-advertisement-archive-row]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.advertisement_id){	errValues.push("err advertisement_id");	}else { counter++; }
+    if(!request.body.archive){	errValues.push("err archive");	}else { counter++; }
+
+
+    if((counter + errValues.length) === 2){
+        if(counter === 2){
+            const data = {
+                advertisement_id: request.body.advertisement_id,
+                archive: request.body.archive
+            };
+            console.log(data);
+            companyAdvertisementManager.updateAdvertisementArchiveState( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Sucessfully registrater!");
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
 });
 
 

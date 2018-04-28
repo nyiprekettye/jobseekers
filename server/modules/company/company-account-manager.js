@@ -1,6 +1,6 @@
 const oracledb = require('oracledb');
 const dbConfig = require('../oracle-connection-config');
-const debug = false;
+const debug = true;
 
 function doRelease(connection) {
     connection.close(
@@ -142,7 +142,7 @@ exports.getCompanyData = (company_id, reqCodeMsg, callback) =>{
                     'FROM COMPANY WHERE ID = :company_id';
                 if (debug)
                     console.log(sql);
-                connection.execute(sql, company_id
+                connection.execute(sql, [company_id]
                     , (err, rows) => {
                         doRelease(connection);
                         if (err) {
@@ -150,8 +150,8 @@ exports.getCompanyData = (company_id, reqCodeMsg, callback) =>{
                             callback(405, reqCodeMsg[405]);
                         } else {
                             if (debug)
-                                console.log(rows);
-                            callback(200, rows);
+                                console.log(rows.rows[0]);
+                            callback(200, rows.rows[0]);
                         }
                     });
             }

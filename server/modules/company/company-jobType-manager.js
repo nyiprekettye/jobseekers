@@ -27,7 +27,7 @@ exports.getJobTypes = (reqCodeMsg, callback) =>{
                 const sql = "SELECT * FROM JOB_TYPE";
                 if(debug)
                     console.log(sql);
-                connection.execute(sql, [user]
+                connection.execute(sql, []
                     , (err, resp) => {
                         doRelease(connection);
                         if (err) {

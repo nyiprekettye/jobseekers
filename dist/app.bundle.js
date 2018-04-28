@@ -910,7 +910,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 var _prodInvariant = __webpack_require__(26);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -1716,6 +1716,25 @@ module.exports = {
 
 /***/ }),
 /* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Provider__ = __webpack_require__(291);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__connect_connect__ = __webpack_require__(293);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Provider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["b"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createProvider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "connectAdvanced", function() { return __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "connect", function() { return __WEBPACK_IMPORTED_MODULE_2__connect_connect__["a"]; });
+
+
+
+
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1747,7 +1766,7 @@ var ReactCurrentOwner = {
 module.exports = ReactCurrentOwner;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1765,7 +1784,7 @@ var _prodInvariant = __webpack_require__(5),
     _assign = __webpack_require__(6);
 
 var CallbackQueue = __webpack_require__(102);
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 var ReactFeatureFlags = __webpack_require__(103);
 var ReactReconciler = __webpack_require__(27);
 var Transaction = __webpack_require__(47);
@@ -2002,25 +2021,6 @@ module.exports = ReactUpdates;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 18 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Provider__ = __webpack_require__(291);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__connect_connect__ = __webpack_require__(293);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Provider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createProvider", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "connectAdvanced", function() { return __WEBPACK_IMPORTED_MODULE_1__components_connectAdvanced__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "connect", function() { return __WEBPACK_IMPORTED_MODULE_2__connect_connect__["a"]; });
-
-
-
-
-
-
-/***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2037,7 +2037,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 var _assign = __webpack_require__(6);
 
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 
 var emptyFunction = __webpack_require__(12);
 var warning = __webpack_require__(3);
@@ -2528,6 +2528,90 @@ module.exports = root;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.setCurrentCompany = setCurrentCompany;
+exports.companyLogout = companyLogout;
+exports.companyLogIn = companyLogIn;
+exports.companySignUp = companySignUp;
+exports.companyGetData = companyGetData;
+
+var _axios = __webpack_require__(30);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _jwtDecode = __webpack_require__(42);
+
+var _jwtDecode2 = _interopRequireDefault(_jwtDecode);
+
+var _auth = __webpack_require__(39);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function setCurrentCompany(company) {
+    return {
+        type: _auth.SET_CURRENT_COMPANY,
+        company: company
+    };
+}
+
+function companyLogout() {
+    return function (dispatch) {
+        localStorage.removeItem('companyJwtToken');
+        localStorage.removeItem('companyName');
+        dispatch(setCurrentCompany({}));
+    };
+}
+
+function companyLogIn(data) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/company/login', data).then(function (res) {
+            //console.log(res);
+            var token = res.data.access_token;
+            var name = res.data.name;
+            //console.log(name);
+            //console.log(token);
+            localStorage.setItem('companyJwtToken', token);
+            localStorage.setItem('companyName', name);
+            //dispatch(setCurrentJobseeker({token: jwtDecode(token), userName : userName}));
+            dispatch(setCurrentCompany({ token: token, name: name }));
+            return res;
+        }).catch(function (error) {
+            //console.log(error)
+            return error;
+        });
+    };
+}
+
+function companySignUp(data) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/company/reg', data);
+    };
+}
+
+function companyGetData(token) {
+    //console.log(token);
+    var postData = {};
+
+    var axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return function (dispatch) {
+        return _axios2.default.post('/api/company/get-company-data', postData, axiosConfig);
+    };
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -2540,7 +2624,7 @@ module.exports = root;
 
 var _assign = __webpack_require__(6);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 
 var warning = __webpack_require__(3);
 var canDefineProperty = __webpack_require__(44);
@@ -2869,7 +2953,7 @@ module.exports = ReactElement;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2985,90 +3069,6 @@ module.exports = PooledClass;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.setCurrentCompany = setCurrentCompany;
-exports.companyLogout = companyLogout;
-exports.companyLogIn = companyLogIn;
-exports.companySignUp = companySignUp;
-exports.companyGetData = companyGetData;
-
-var _axios = __webpack_require__(29);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-var _jwtDecode = __webpack_require__(42);
-
-var _jwtDecode2 = _interopRequireDefault(_jwtDecode);
-
-var _auth = __webpack_require__(39);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function setCurrentCompany(company) {
-    return {
-        type: _auth.SET_CURRENT_COMPANY,
-        company: company
-    };
-}
-
-function companyLogout() {
-    return function (dispatch) {
-        localStorage.removeItem('companyJwtToken');
-        localStorage.removeItem('companyName');
-        dispatch(setCurrentCompany({}));
-    };
-}
-
-function companyLogIn(data) {
-    return function (dispatch) {
-        return _axios2.default.post('/api/company/login', data).then(function (res) {
-            //console.log(res);
-            var token = res.data.access_token;
-            var name = res.data.name;
-            //console.log(name);
-            //console.log(token);
-            localStorage.setItem('companyJwtToken', token);
-            localStorage.setItem('companyName', name);
-            //dispatch(setCurrentJobseeker({token: jwtDecode(token), userName : userName}));
-            dispatch(setCurrentCompany({ token: token, name: name }));
-            return res;
-        }).catch(function (error) {
-            //console.log(error)
-            return error;
-        });
-    };
-}
-
-function companySignUp(data) {
-    return function (dispatch) {
-        return _axios2.default.post('/api/company/reg', data);
-    };
-}
-
-function companyGetData(token) {
-    //console.log(token);
-    var postData = {};
-
-    var axiosConfig = {
-        headers: {
-            'access_token': token
-        }
-    };
-
-    return function (dispatch) {
-        return _axios2.default.post('/api/company/get-company-data', postData, axiosConfig);
-    };
-}
-
-/***/ }),
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3088,7 +3088,7 @@ var _assign = __webpack_require__(6);
 var ReactBaseClasses = __webpack_require__(91);
 var ReactChildren = __webpack_require__(166);
 var ReactDOMFactories = __webpack_require__(170);
-var ReactElement = __webpack_require__(22);
+var ReactElement = __webpack_require__(23);
 var ReactPropTypes = __webpack_require__(174);
 var ReactVersion = __webpack_require__(176);
 
@@ -3539,12 +3539,71 @@ module.exports = DOMLazyTree;
 
 /***/ }),
 /* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(266);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(269);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(126);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(271);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(274);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(277);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(279);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(127);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(76);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(284);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(286);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(288);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(289);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(344);
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3614,7 +3673,7 @@ TextFieldGroup.defaultProps = {
 exports.default = TextFieldGroup;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3638,7 +3697,7 @@ function merge() {
 module.exports = exports['default'];
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3652,7 +3711,7 @@ module.exports = exports['default'];
 
 
 
-var EventPluginHub = __webpack_require__(33);
+var EventPluginHub = __webpack_require__(34);
 var EventPluginUtils = __webpack_require__(58);
 
 var accumulateInto = __webpack_require__(99);
@@ -3776,7 +3835,7 @@ module.exports = EventPropagators;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4054,7 +4113,7 @@ module.exports = EventPluginHub;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4116,7 +4175,7 @@ SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 module.exports = SyntheticUIEvent;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4163,65 +4222,6 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-
-/***/ }),
-/* 36 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(266);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(269);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(126);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(271);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(274);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(277);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(279);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(127);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(76);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(284);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(286);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(288);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(289);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /***/ }),
 /* 37 */
@@ -4536,7 +4536,7 @@ exports.jobseekerLogin = jobseekerLogin;
 exports.jobseekerSignUp = jobseekerSignUp;
 exports.jobseekerGetData = jobseekerGetData;
 
-var _axios = __webpack_require__(29);
+var _axios = __webpack_require__(30);
 
 var _axios2 = _interopRequireDefault(_axios);
 
@@ -5161,7 +5161,7 @@ module.exports = TransactionImpl;
 
 
 
-var SyntheticUIEvent = __webpack_require__(34);
+var SyntheticUIEvent = __webpack_require__(35);
 var ViewportMetrics = __webpack_require__(106);
 
 var getEventModifierState = __webpack_require__(62);
@@ -7563,10 +7563,10 @@ module.exports = KeyEscapeUtils;
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(16);
-var ReactInstanceMap = __webpack_require__(35);
+var ReactCurrentOwner = __webpack_require__(17);
+var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(13);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -9145,7 +9145,7 @@ var _assertString = __webpack_require__(1);
 
 var _assertString2 = _interopRequireDefault(_assertString);
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -9531,9 +9531,9 @@ module.exports = getIteratorFn;
 
 
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var ReactComponentTreeHook = __webpack_require__(11);
-var ReactElement = __webpack_require__(22);
+var ReactElement = __webpack_require__(23);
 
 var checkReactTypeSpec = __webpack_require__(171);
 
@@ -10517,7 +10517,7 @@ var _prodInvariant = __webpack_require__(5);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 
 var invariant = __webpack_require__(2);
 
@@ -11374,7 +11374,7 @@ var _assign = __webpack_require__(6);
 
 var LinkedValueUtils = __webpack_require__(66);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var warning = __webpack_require__(3);
 
@@ -11858,7 +11858,7 @@ module.exports = ReactHostComponent;
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var REACT_ELEMENT_TYPE = __webpack_require__(226);
 
 var getIteratorFn = __webpack_require__(227);
@@ -12291,17 +12291,17 @@ var DOMLazyTree = __webpack_require__(28);
 var DOMProperty = __webpack_require__(20);
 var React = __webpack_require__(25);
 var ReactBrowserEventEmitter = __webpack_require__(51);
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var ReactDOMComponentTree = __webpack_require__(7);
 var ReactDOMContainerInfo = __webpack_require__(256);
 var ReactDOMFeatureFlags = __webpack_require__(257);
 var ReactFeatureFlags = __webpack_require__(103);
-var ReactInstanceMap = __webpack_require__(35);
+var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(13);
 var ReactMarkupChecksum = __webpack_require__(258);
 var ReactReconciler = __webpack_require__(27);
 var ReactUpdateQueue = __webpack_require__(71);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var emptyObject = __webpack_require__(45);
 var instantiateReactComponent = __webpack_require__(113);
@@ -14475,7 +14475,7 @@ exports.setCurrentUser = setCurrentUser;
 exports.logout = logout;
 exports.login = login;
 
-var _axios = __webpack_require__(29);
+var _axios = __webpack_require__(30);
 
 var _axios2 = _interopRequireDefault(_axios);
 
@@ -15143,8 +15143,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.companyNewAdvertisement = companyNewAdvertisement;
 exports.getAdvertisements = getAdvertisements;
+exports.updateAdvertisementArchiveState = updateAdvertisementArchiveState;
+exports.getAdvertisementById = getAdvertisementById;
+exports.updateAdvertisementById = updateAdvertisementById;
 
-var _index = __webpack_require__(29);
+var _index = __webpack_require__(30);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -15179,6 +15182,47 @@ function getAdvertisements(token) {
         return _index2.default.post('/api/company/get-job-advertisements', data, axiosConfig);
     };
 }
+function updateAdvertisementArchiveState(data, token) {
+    //console.log(token);
+
+    var axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return function (dispatch) {
+        return _index2.default.post('/api/company/update-advertisement-archive-row', data, axiosConfig);
+    };
+}
+
+function getAdvertisementById(data, token) {
+    //console.log(token);
+
+    var axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return function (dispatch) {
+        return _index2.default.post('/api/company/get-advertisement-by-id', data, axiosConfig);
+    };
+}
+
+function updateAdvertisementById(data, token) {
+    //console.log(token);
+
+    var axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return function (dispatch) {
+        return _index2.default.post('/api/company/update-advertisement-by-id', data, axiosConfig);
+    };
+}
 
 /***/ }),
 /* 165 */
@@ -15195,11 +15239,11 @@ var _reactDom = __webpack_require__(180);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(36);
+var _reactRouterDom = __webpack_require__(29);
 
 var _history = __webpack_require__(129);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
 var _reduxThunk = __webpack_require__(314);
 
@@ -15219,7 +15263,7 @@ var _auth = __webpack_require__(148);
 
 var _jobseekerAuth = __webpack_require__(43);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
 var _Greetings = __webpack_require__(362);
 
@@ -15257,17 +15301,21 @@ var _CompanyProfil = __webpack_require__(431);
 
 var _CompanyProfil2 = _interopRequireDefault(_CompanyProfil);
 
-var _JobseekerAddNewCVPage = __webpack_require__(432);
+var _JobseekerAddNewCVPage = __webpack_require__(433);
 
 var _JobseekerAddNewCVPage2 = _interopRequireDefault(_JobseekerAddNewCVPage);
 
-var _AdminLoginPage = __webpack_require__(433);
+var _AdminLoginPage = __webpack_require__(434);
 
 var _AdminLoginPage2 = _interopRequireDefault(_AdminLoginPage);
 
-var _CompanyAddNewJobAdvertisement = __webpack_require__(436);
+var _CompanyAddNewJobAdvertisement = __webpack_require__(437);
 
 var _CompanyAddNewJobAdvertisement2 = _interopRequireDefault(_CompanyAddNewJobAdvertisement);
+
+var _CompanyUpdateJobAdvertisementById = __webpack_require__(441);
+
+var _CompanyUpdateJobAdvertisementById2 = _interopRequireDefault(_CompanyUpdateJobAdvertisementById);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -15314,6 +15362,7 @@ var MyApp = function MyApp() {
             _react2.default.createElement(_reactRouterDom.Route, { path: '/company-signup', component: _CompanySignUpPage2.default }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/company-profil', component: _CompanyProfil2.default }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/company-add-new-advertisment', component: _CompanyAddNewJobAdvertisement2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/company-update-advertisment-by-id/:id', component: _CompanyUpdateJobAdvertisementById2.default }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/admin-login', component: _AdminLoginPage2.default })
         )
     );
@@ -15346,7 +15395,7 @@ _reactDom2.default.render(_react2.default.createElement(
 
 
 var PooledClass = __webpack_require__(167);
-var ReactElement = __webpack_require__(22);
+var ReactElement = __webpack_require__(23);
 
 var emptyFunction = __webpack_require__(12);
 var traverseAllChildren = __webpack_require__(168);
@@ -15657,7 +15706,7 @@ module.exports = PooledClass;
 
 var _prodInvariant = __webpack_require__(26);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var REACT_ELEMENT_TYPE = __webpack_require__(93);
 
 var getIteratorFn = __webpack_require__(94);
@@ -15897,7 +15946,7 @@ module.exports = KeyEscapeUtils;
 
 
 
-var ReactElement = __webpack_require__(22);
+var ReactElement = __webpack_require__(23);
 
 /**
  * Create a factory that creates HTML tag elements.
@@ -16210,7 +16259,7 @@ module.exports = ReactPropTypesSecret;
 
 
 
-var _require = __webpack_require__(22),
+var _require = __webpack_require__(23),
     isValidElement = _require.isValidElement;
 
 var factory = __webpack_require__(96);
@@ -16319,7 +16368,7 @@ module.exports = '15.6.2';
 var _require = __webpack_require__(91),
     Component = _require.Component;
 
-var _require2 = __webpack_require__(22),
+var _require2 = __webpack_require__(23),
     isValidElement = _require2.isValidElement;
 
 var ReactNoopUpdateQueue = __webpack_require__(92);
@@ -17277,7 +17326,7 @@ module.exports = factory;
 
 var _prodInvariant = __webpack_require__(26);
 
-var ReactElement = __webpack_require__(22);
+var ReactElement = __webpack_require__(23);
 
 var invariant = __webpack_require__(2);
 
@@ -17334,7 +17383,7 @@ var ReactDOMComponentTree = __webpack_require__(7);
 var ReactDefaultInjection = __webpack_require__(182);
 var ReactMount = __webpack_require__(121);
 var ReactReconciler = __webpack_require__(27);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var ReactVersion = __webpack_require__(260);
 
 var findDOMNode = __webpack_require__(261);
@@ -17609,7 +17658,7 @@ module.exports = ARIADOMPropertyConfig;
 
 
 
-var EventPropagators = __webpack_require__(32);
+var EventPropagators = __webpack_require__(33);
 var ExecutionEnvironment = __webpack_require__(8);
 var FallbackCompositionState = __webpack_require__(185);
 var SyntheticCompositionEvent = __webpack_require__(186);
@@ -17998,7 +18047,7 @@ module.exports = BeforeInputEventPlugin;
 
 var _assign = __webpack_require__(6);
 
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 
 var getTextContentAccessor = __webpack_require__(101);
 
@@ -18173,11 +18222,11 @@ module.exports = SyntheticInputEvent;
 
 
 
-var EventPluginHub = __webpack_require__(33);
-var EventPropagators = __webpack_require__(32);
+var EventPluginHub = __webpack_require__(34);
+var EventPropagators = __webpack_require__(33);
 var ExecutionEnvironment = __webpack_require__(8);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var SyntheticEvent = __webpack_require__(19);
 
 var inputValueTracking = __webpack_require__(104);
@@ -19212,7 +19261,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 
-var EventPropagators = __webpack_require__(32);
+var EventPropagators = __webpack_require__(33);
 var ReactDOMComponentTree = __webpack_require__(7);
 var SyntheticMouseEvent = __webpack_require__(48);
 
@@ -19999,7 +20048,7 @@ var DOMLazyTree = __webpack_require__(28);
 var DOMNamespaces = __webpack_require__(64);
 var DOMProperty = __webpack_require__(20);
 var DOMPropertyOperations = __webpack_require__(110);
-var EventPluginHub = __webpack_require__(33);
+var EventPluginHub = __webpack_require__(34);
 var EventPluginRegistry = __webpack_require__(46);
 var ReactBrowserEventEmitter = __webpack_require__(51);
 var ReactDOMComponentFlags = __webpack_require__(98);
@@ -21553,7 +21602,7 @@ module.exports = quoteAttributeValueForBrowser;
 
 
 
-var EventPluginHub = __webpack_require__(33);
+var EventPluginHub = __webpack_require__(34);
 
 function runEventQueueInBatch(events) {
   EventPluginHub.enqueueEvents(events);
@@ -21698,7 +21747,7 @@ var _prodInvariant = __webpack_require__(5),
 var DOMPropertyOperations = __webpack_require__(110);
 var LinkedValueUtils = __webpack_require__(66);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -22114,7 +22163,7 @@ var _prodInvariant = __webpack_require__(5),
 
 var LinkedValueUtils = __webpack_require__(66);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -22276,10 +22325,10 @@ module.exports = ReactDOMTextarea;
 var _prodInvariant = __webpack_require__(5);
 
 var ReactComponentEnvironment = __webpack_require__(67);
-var ReactInstanceMap = __webpack_require__(35);
+var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(13);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var ReactReconciler = __webpack_require__(27);
 var ReactChildReconciler = __webpack_require__(221);
 
@@ -22885,9 +22934,9 @@ var _prodInvariant = __webpack_require__(5),
 
 var React = __webpack_require__(25);
 var ReactComponentEnvironment = __webpack_require__(67);
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var ReactErrorUtils = __webpack_require__(59);
-var ReactInstanceMap = __webpack_require__(35);
+var ReactInstanceMap = __webpack_require__(36);
 var ReactInstrumentation = __webpack_require__(13);
 var ReactNodeTypes = __webpack_require__(114);
 var ReactReconciler = __webpack_require__(27);
@@ -24077,7 +24126,7 @@ module.exports = flattenChildren;
 
 var _assign = __webpack_require__(6);
 
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 var Transaction = __webpack_require__(47);
 var ReactInstrumentation = __webpack_require__(13);
 var ReactServerUpdateQueue = __webpack_require__(230);
@@ -24683,7 +24732,7 @@ module.exports = ReactDOMTextComponent;
 
 var _assign = __webpack_require__(6);
 
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 var Transaction = __webpack_require__(47);
 
 var emptyFunction = __webpack_require__(12);
@@ -24756,9 +24805,9 @@ var _assign = __webpack_require__(6);
 
 var EventListener = __webpack_require__(118);
 var ExecutionEnvironment = __webpack_require__(8);
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var getEventTarget = __webpack_require__(60);
 var getUnboundedScrollPosition = __webpack_require__(236);
@@ -24953,13 +25002,13 @@ module.exports = getUnboundedScrollPosition;
 
 
 var DOMProperty = __webpack_require__(20);
-var EventPluginHub = __webpack_require__(33);
+var EventPluginHub = __webpack_require__(34);
 var EventPluginUtils = __webpack_require__(58);
 var ReactComponentEnvironment = __webpack_require__(67);
 var ReactEmptyComponent = __webpack_require__(115);
 var ReactBrowserEventEmitter = __webpack_require__(51);
 var ReactHostComponent = __webpack_require__(116);
-var ReactUpdates = __webpack_require__(17);
+var ReactUpdates = __webpack_require__(18);
 
 var ReactInjection = {
   Component: ReactComponentEnvironment.injection,
@@ -24992,7 +25041,7 @@ module.exports = ReactInjection;
 var _assign = __webpack_require__(6);
 
 var CallbackQueue = __webpack_require__(102);
-var PooledClass = __webpack_require__(23);
+var PooledClass = __webpack_require__(24);
 var ReactBrowserEventEmitter = __webpack_require__(51);
 var ReactInputSelection = __webpack_require__(119);
 var ReactInstrumentation = __webpack_require__(13);
@@ -25867,7 +25916,7 @@ module.exports = SVGDOMPropertyConfig;
 
 
 
-var EventPropagators = __webpack_require__(32);
+var EventPropagators = __webpack_require__(33);
 var ExecutionEnvironment = __webpack_require__(8);
 var ReactDOMComponentTree = __webpack_require__(7);
 var ReactInputSelection = __webpack_require__(119);
@@ -26062,7 +26111,7 @@ module.exports = SelectEventPlugin;
 var _prodInvariant = __webpack_require__(5);
 
 var EventListener = __webpack_require__(118);
-var EventPropagators = __webpack_require__(32);
+var EventPropagators = __webpack_require__(33);
 var ReactDOMComponentTree = __webpack_require__(7);
 var SyntheticAnimationEvent = __webpack_require__(247);
 var SyntheticClipboardEvent = __webpack_require__(248);
@@ -26073,7 +26122,7 @@ var SyntheticMouseEvent = __webpack_require__(48);
 var SyntheticDragEvent = __webpack_require__(252);
 var SyntheticTouchEvent = __webpack_require__(253);
 var SyntheticTransitionEvent = __webpack_require__(254);
-var SyntheticUIEvent = __webpack_require__(34);
+var SyntheticUIEvent = __webpack_require__(35);
 var SyntheticWheelEvent = __webpack_require__(255);
 
 var emptyFunction = __webpack_require__(12);
@@ -26371,7 +26420,7 @@ module.exports = SyntheticClipboardEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(34);
+var SyntheticUIEvent = __webpack_require__(35);
 
 /**
  * @interface FocusEvent
@@ -26410,7 +26459,7 @@ module.exports = SyntheticFocusEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(34);
+var SyntheticUIEvent = __webpack_require__(35);
 
 var getEventCharCode = __webpack_require__(73);
 var getEventKey = __webpack_require__(251);
@@ -26651,7 +26700,7 @@ module.exports = SyntheticDragEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(34);
+var SyntheticUIEvent = __webpack_require__(35);
 
 var getEventModifierState = __webpack_require__(62);
 
@@ -26973,9 +27022,9 @@ module.exports = '15.6.2';
 
 var _prodInvariant = __webpack_require__(5);
 
-var ReactCurrentOwner = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(17);
 var ReactDOMComponentTree = __webpack_require__(7);
-var ReactInstanceMap = __webpack_require__(35);
+var ReactInstanceMap = __webpack_require__(36);
 
 var getHostComponentFromComposite = __webpack_require__(122);
 var invariant = __webpack_require__(2);
@@ -33285,7 +33334,7 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(36);
+var _reactRouterDom = __webpack_require__(29);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33314,19 +33363,6 @@ var Greetings = function (_React$Component) {
                     'h1',
                     null,
                     'Hi!'
-                ),
-                _react2.default.createElement(
-                    'ul',
-                    { className: 'nav navbar-nav navbar-right' },
-                    _react2.default.createElement(
-                        'li',
-                        null,
-                        _react2.default.createElement(
-                            _reactRouterDom.Link,
-                            { to: '/company-add-new-advertisment' },
-                            'Company - Add new job advertisment'
-                        )
-                    )
                 )
             );
         }
@@ -33466,9 +33502,9 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -33760,7 +33796,7 @@ var _assertString = __webpack_require__(1);
 
 var _assertString2 = _interopRequireDefault(_assertString);
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -33863,7 +33899,7 @@ var _isIP = __webpack_require__(156);
 
 var _isIP2 = _interopRequireDefault(_isIP);
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -34354,7 +34390,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = isDecimal;
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -35156,7 +35192,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = isCurrency;
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -35722,7 +35758,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = normalizeEmail;
 
-var _merge = __webpack_require__(31);
+var _merge = __webpack_require__(32);
 
 var _merge2 = _interopRequireDefault(_merge);
 
@@ -35920,9 +35956,9 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -35930,7 +35966,7 @@ var _login = __webpack_require__(87);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35984,7 +36020,7 @@ var CompanyLoginForm = function (_React$Component) {
             if (this.isValid()) {
                 this.setState({ errors: {}, isLoading: true });
                 this.props.companyLogIn(this.state).then(function (res) {
-                    console.log(res);
+                    //console.log(res);
                     if (res.status === 200) {
 
                         _this2.context.router.history.push('/');
@@ -36144,15 +36180,15 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(36);
+var _reactRouterDom = __webpack_require__(29);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
 var _auth = __webpack_require__(148);
 
 var _jobseekerAuth = __webpack_require__(43);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36488,9 +36524,9 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -36794,9 +36830,9 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -36804,7 +36840,7 @@ var _companySignup = __webpack_require__(429);
 
 var _companySignup2 = _interopRequireDefault(_companySignup);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37081,9 +37117,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _jobseekerAuth = __webpack_require__(43);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _reactRouterDom = __webpack_require__(36);
+var _reactRouterDom = __webpack_require__(29);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37292,13 +37328,15 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
-var _companyJobAdvertisement = __webpack_require__(164);
+var _reactRedux = __webpack_require__(16);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRouterDom = __webpack_require__(29);
 
-var _reactRouterDom = __webpack_require__(36);
+var _CompanyAdvertisementsList = __webpack_require__(432);
+
+var _CompanyAdvertisementsList2 = _interopRequireDefault(_CompanyAdvertisementsList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37345,24 +37383,10 @@ var CompanyProfil = function (_React$Component) {
                         email: resData.data.email,
                         tax_number: resData.data.tax_number,
                         city: resData.data.city,
-                        address: resData.data.address
+                        address: resData.data.address,
+                        loading: 'false'
                     });
                     //console.log(this.state);
-
-
-                    _this2.props.getAdvertisements(company.token).then(function (resData2) {
-                        //  resolve(res);
-                        _this2.setState({
-                            advertisements: resData2.data.advertisements,
-                            loading: 'false'
-                        });
-                        //console.log(this.state);
-                        resolve('This is my data.');
-                    }, function (err2) {
-                        reject(err2);
-                    });
-
-                    //resolve('This is my data.');
                 }, function (err) {
                     reject(err);
                 });
@@ -37406,133 +37430,138 @@ var CompanyProfil = function (_React$Component) {
 
             return _react2.default.createElement(
                 'div',
-                { className: 'row' },
+                null,
                 _react2.default.createElement(
                     'div',
-                    { className: 'col-md-4 col-md-offset-4' },
+                    { className: 'row' },
                     _react2.default.createElement(
-                        'h1',
-                        null,
-                        'Company Profil'
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
                         _react2.default.createElement(
-                            'strong',
+                            'h1',
                             null,
-                            'Username :'
-                        ),
-                        ' ',
-                        this.state.username
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        _react2.default.createElement(
-                            'strong',
-                            null,
-                            'Name :'
-                        ),
-                        ' ',
-                        this.state.name
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        _react2.default.createElement(
-                            'strong',
-                            null,
-                            'Email : '
-                        ),
-                        this.state.email
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        _react2.default.createElement(
-                            'strong',
-                            null,
-                            'Tax Number : '
-                        ),
-                        this.state.tax_number
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        _react2.default.createElement(
-                            'strong',
-                            null,
-                            'City : '
-                        ),
-                        this.state.city
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'span',
-                        null,
-                        _react2.default.createElement(
-                            'strong',
-                            null,
-                            'Address : '
-                        ),
-                        this.state.address
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-4 col-md-offset-4' },
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        'Linkek'
+                            'Company Profil'
+                        )
                     ),
                     _react2.default.createElement(
-                        'ul',
-                        { className: 'nav navbar-nav navbar-right' },
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
                         _react2.default.createElement(
-                            'li',
+                            'span',
                             null,
                             _react2.default.createElement(
-                                _reactRouterDom.Link,
-                                { to: '/' },
-                                'Home'
-                            )
+                                'strong',
+                                null,
+                                'Username :'
+                            ),
+                            ' ',
+                            this.state.username
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'span',
+                            null,
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Name :'
+                            ),
+                            ' ',
+                            this.state.name
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'span',
+                            null,
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Email : '
+                            ),
+                            this.state.email
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'span',
+                            null,
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Tax Number : '
+                            ),
+                            this.state.tax_number
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'span',
+                            null,
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'City : '
+                            ),
+                            this.state.city
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'span',
+                            null,
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Address : '
+                            ),
+                            this.state.address
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-4 col-md-offset-4' },
+                        _react2.default.createElement(
+                            'h1',
+                            null,
+                            'Linkek'
                         ),
                         _react2.default.createElement(
-                            'li',
-                            null,
+                            'ul',
+                            { className: 'nav navbar-nav navbar-left' },
                             _react2.default.createElement(
-                                _reactRouterDom.Link,
-                                { to: '/company-add-new-advertisment' },
-                                'Add new job advertisement'
+                                'li',
+                                null,
+                                _react2.default.createElement(
+                                    _reactRouterDom.Link,
+                                    { to: '/' },
+                                    'Home'
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'li',
+                                null,
+                                _react2.default.createElement(
+                                    _reactRouterDom.Link,
+                                    { to: '/company-add-new-advertisment' },
+                                    'Add new job advertisement'
+                                )
                             )
                         )
                     )
-                )
+                ),
+                _react2.default.createElement(_CompanyAdvertisementsList2.default, null)
             );
         }
     }]);
@@ -37542,8 +37571,7 @@ var CompanyProfil = function (_React$Component) {
 
 CompanyProfil.propTypes = {
     companyGetData: _react2.default.PropTypes.func.isRequired,
-    companyLogout: _react2.default.PropTypes.func.isRequired,
-    getAdvertisements: _react2.default.PropTypes.func.isRequired
+    companyLogout: _react2.default.PropTypes.func.isRequired
 };
 
 CompanyProfil.contextTypes = {
@@ -37556,10 +37584,329 @@ function mapStateToProps(state) {
     };
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, { companyGetData: _companyAuth.companyGetData, companyLogout: _companyAuth.companyLogout, getAdvertisements: _companyJobAdvertisement.getAdvertisements })(CompanyProfil);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, { companyGetData: _companyAuth.companyGetData, companyLogout: _companyAuth.companyLogout })(CompanyProfil);
 
 /***/ }),
 /* 432 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _companyAuth = __webpack_require__(22);
+
+var _companyJobAdvertisement = __webpack_require__(164);
+
+var _reactRedux = __webpack_require__(16);
+
+var _reactRouterDom = __webpack_require__(29);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CompanyAdvertisementsList = function (_React$Component) {
+    _inherits(CompanyAdvertisementsList, _React$Component);
+
+    function CompanyAdvertisementsList(props) {
+        _classCallCheck(this, CompanyAdvertisementsList);
+
+        var _this = _possibleConstructorReturn(this, (CompanyAdvertisementsList.__proto__ || Object.getPrototypeOf(CompanyAdvertisementsList)).call(this, props));
+
+        _this.state = {
+            advertisements: [],
+            loading_advertisiemets: 'initial'
+        };
+        return _this;
+    }
+
+    _createClass(CompanyAdvertisementsList, [{
+        key: 'loadData',
+        value: function loadData() {
+            var _this2 = this;
+
+            var promise = new Promise(function (resolve, reject) {
+                var company = _this2.props.auth.company;
+
+                _this2.props.getAdvertisements(company.token).then(function (resData) {
+                    //console.log(resData.data);
+                    _this2.setState({
+                        advertisements: resData.data,
+                        loading_advertisiemets: 'false'
+                    });
+                    //console.log(this.state);
+                    resolve('This is my data.');
+                }, function (err2) {
+                    reject(err2);
+                });
+            });
+
+            return promise;
+        }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this3 = this;
+
+            this.setState({ loading: 'true' });
+            this.loadData().then(function (resData) {
+                //console.log(this.state);
+            }, function (err) {
+                console.log(err);
+                _this3.props.companyLogout();
+                _this3.context.router.history.push('/');
+            });
+        }
+    }, {
+        key: 'reload',
+        value: function reload() {
+            var _this4 = this;
+
+            this.setState({ loading: 'true' });
+            this.loadData().then(function (resData) {
+                //console.log(this.state);
+            }, function (err) {
+                console.log(err);
+                _this4.props.companyLogout();
+                _this4.context.router.history.push('/');
+            });
+        }
+    }, {
+        key: 'archiveActive',
+        value: function archiveActive(advertisement_id, archive) {
+            var _this5 = this;
+
+            this.setState({
+                advertisements: [],
+                loading_advertisiemets: 'initial'
+            });
+
+            var company = this.props.auth.company;
+
+            var data = {
+                advertisement_id: advertisement_id,
+                archive: archive
+            };
+
+            this.props.updateAdvertisementArchiveState(data, company.token).then(function (resData) {
+                //console.log(resData.data);
+                //console.log(this.state);
+                console.log(resData);
+                _this5.reload();
+            }, function (err) {
+                console.log(err);
+                _this5.reload();
+            });
+        }
+    }, {
+        key: 'updateAdvertisementById',
+        value: function updateAdvertisementById(advertisement_id) {
+            this.context.router.history.push('/company-update-advertisment-by-id/' + advertisement_id);
+        }
+    }, {
+        key: 'color',
+        value: function color(inspected, archive) {
+            if (inspected === 0 && archive === 0) {
+                return { backgroundColor: 'yellow' };
+            } else if (inspected === 0 && archive === 1) {
+                return { backgroundColor: 'gray' };
+            } else if (inspected === 1 && archive === 0) {
+                return { backgroundColor: 'green' };
+            } else if (inspected === 1 && archive === 1) {
+                return { backgroundColor: 'gray' };
+            } else if (inspected === -1) {
+                return { backgroundColor: 'red' };
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this6 = this;
+
+            if (this.state.loading_advertisiemets === 'initial') {
+                return _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Intializing...'
+                );
+            }
+
+            if (this.state.loading_advertisiemets === 'true') {
+                return _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Loading...'
+                );
+            }
+            var advertisements = this.state.advertisements;
+
+            var inspectedAndNotArchive = "style='backgroud-color:green'";
+            var wrong = "style='backgroud-color:red'";
+            var archive = "style='backgroud-color:gray'";
+            var notInspected = "style='backgroud-color:yellow'";
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'col-md-10 col-md-offset-1' },
+                _react2.default.createElement(
+                    'h1',
+                    null,
+                    'Company Advertisements'
+                ),
+                _react2.default.createElement(
+                    'table',
+                    { className: 'table' },
+                    _react2.default.createElement(
+                        'thead',
+                        null,
+                        _react2.default.createElement(
+                            'tr',
+                            null,
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Job type'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Name'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Description'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'City'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Date'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Validate'
+                            ),
+                            _react2.default.createElement(
+                                'th',
+                                null,
+                                'Archive'
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'tbody',
+                        null,
+                        advertisements.map(function (advertisement, i) {
+                            return _react2.default.createElement(
+                                'tr',
+                                { key: i, style: _this6.color(advertisement[7], advertisement[8]) },
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[2]
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[3]
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[4]
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[5]
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[6]
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[7] === 1 ? 'true' : 'false'
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    advertisement[8] === 0 ? _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn', onClick: _this6.archiveActive.bind(_this6, advertisement[0], 1) },
+                                        'Go to archive'
+                                    ) : _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn', onClick: _this6.archiveActive.bind(_this6, advertisement[0], 0) },
+                                        'Go to active'
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    null,
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-warning', onClick: _this6.updateAdvertisementById.bind(_this6, advertisement[0]) },
+                                        'edit'
+                                    )
+                                )
+                            );
+                        })
+                    )
+                )
+            );
+        }
+    }]);
+
+    return CompanyAdvertisementsList;
+}(_react2.default.Component);
+
+CompanyAdvertisementsList.propTypes = {
+    companyLogout: _react2.default.PropTypes.func.isRequired,
+    getAdvertisements: _react2.default.PropTypes.func.isRequired,
+    updateAdvertisementArchiveState: _react2.default.PropTypes.func.isRequired
+};
+
+CompanyAdvertisementsList.contextTypes = {
+    router: _react2.default.PropTypes.object.isRequired
+};
+
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, {
+    companyLogout: _companyAuth.companyLogout,
+    getAdvertisements: _companyJobAdvertisement.getAdvertisements,
+    updateAdvertisementArchiveState: _companyJobAdvertisement.updateAdvertisementArchiveState
+})(CompanyAdvertisementsList);
+
+/***/ }),
+/* 433 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37618,7 +37965,7 @@ var JobseekerAddNewCVPage = function (_React$Component) {
 exports.default = JobseekerAddNewCVPage;
 
 /***/ }),
-/* 433 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37634,7 +37981,7 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _AdminLoginForm = __webpack_require__(434);
+var _AdminLoginForm = __webpack_require__(435);
 
 var _AdminLoginForm2 = _interopRequireDefault(_AdminLoginForm);
 
@@ -37676,7 +38023,7 @@ var AdminLoginPage = function (_React$Component) {
 exports.default = AdminLoginPage;
 
 /***/ }),
-/* 434 */
+/* 435 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37692,9 +38039,9 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
@@ -37702,9 +38049,9 @@ var _login = __webpack_require__(87);
 
 var _login2 = _interopRequireDefault(_login);
 
-var _adminAuth = __webpack_require__(435);
+var _adminAuth = __webpack_require__(436);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37844,7 +38191,7 @@ AdminLoginForm.contextTypes = {
 exports.default = (0, _reactRedux.connect)(null, { adminLogin: _adminAuth.adminLogin })(AdminLoginForm);
 
 /***/ }),
-/* 435 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37857,7 +38204,7 @@ exports.setCurrentAdmin = setCurrentAdmin;
 exports.adminsLogout = adminsLogout;
 exports.adminLogin = adminLogin;
 
-var _axios = __webpack_require__(29);
+var _axios = __webpack_require__(30);
 
 var _axios2 = _interopRequireDefault(_axios);
 
@@ -37898,7 +38245,7 @@ function adminLogin(data) {
 }
 
 /***/ }),
-/* 436 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37914,23 +38261,23 @@ var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(18);
+var _reactRedux = __webpack_require__(16);
 
-var _companyAuth = __webpack_require__(24);
+var _companyAuth = __webpack_require__(22);
 
-var _companyJobType = __webpack_require__(437);
+var _companyJobType = __webpack_require__(438);
 
 var _companyJobAdvertisement = __webpack_require__(164);
 
-var _TextFieldGroup = __webpack_require__(30);
+var _TextFieldGroup = __webpack_require__(31);
 
 var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
 
-var _TextareaFieldGroup = __webpack_require__(438);
+var _TextareaFieldGroup = __webpack_require__(439);
 
 var _TextareaFieldGroup2 = _interopRequireDefault(_TextareaFieldGroup);
 
-var _companyNewJobAdvertisement = __webpack_require__(439);
+var _companyNewJobAdvertisement = __webpack_require__(440);
 
 var _companyNewJobAdvertisement2 = _interopRequireDefault(_companyNewJobAdvertisement);
 
@@ -38045,7 +38392,7 @@ var CompanyAddNewJobAdvertisement = function (_React$Component) {
                     console.log(res);
                     if (res.status === 200) {
 
-                        _this4.context.router.history.push('/');
+                        _this4.context.router.history.push('/company-profil');
                     } else {
                         console.log(res);
                         _this4.setState({ errors: { response: res.request.response }, isLoading: false });
@@ -38053,8 +38400,11 @@ var CompanyAddNewJobAdvertisement = function (_React$Component) {
                 }, function (err) {
                     if (err.response.status && parseInt(err.response.status) === 404) {
                         _this4.setState({ errors: { response: "server is not available" }, isLoading: false });
+                    } else if (err.response.status && parseInt(err.response.status) === 401) {
+                        _this4.setState({ errors: { response: err.response.data.errors }, isLoading: false });
+                        _this4.context.router.history.push('/company-login');
                     } else {
-                        console.log("err in login form:");
+                        console.log("err in form:");
                         console.log(err);
                         _this4.setState({ errors: { response: err.response.data.errors }, isLoading: false });
                     }
@@ -38131,6 +38481,7 @@ var CompanyAddNewJobAdvertisement = function (_React$Component) {
                             { onChange: this.onChange,
                                 value: current_job_type,
                                 name: "current_job_type" },
+                            console.log(job_types),
                             _react2.default.createElement(
                                 "option",
                                 { value: "-1" },
@@ -38139,8 +38490,8 @@ var CompanyAddNewJobAdvertisement = function (_React$Component) {
                             job_types.map(function (job_type) {
                                 return _react2.default.createElement(
                                     "option",
-                                    { key: job_type.id, value: job_type.id },
-                                    job_type.name
+                                    { key: job_type[0], value: job_type[0] },
+                                    job_type[1]
                                 );
                             })
                         ),
@@ -38204,7 +38555,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, {
 })(CompanyAddNewJobAdvertisement);
 
 /***/ }),
-/* 437 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38215,7 +38566,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getJobTypes = getJobTypes;
 
-var _index = __webpack_require__(29);
+var _index = __webpack_require__(30);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -38237,7 +38588,7 @@ function getJobTypes(token) {
 }
 
 /***/ }),
-/* 438 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38307,7 +38658,7 @@ TextareaFieldGroup.defaultProps = {
 exports.default = TextareaFieldGroup;
 
 /***/ }),
-/* 439 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38349,6 +38700,330 @@ function validateInput(data) {
 
     if (!_validator2.default.isEmpty(data.current_job_type) && data.current_job_type < 1) {
         errors.current_job_type = 'This field is required';
+    }
+
+    return {
+        errors: errors,
+        isValid: (0, _isEmpty2.default)(errors)
+    };
+}
+
+/***/ }),
+/* 441 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _companyAuth = __webpack_require__(22);
+
+var _companyJobAdvertisement = __webpack_require__(164);
+
+var _reactRedux = __webpack_require__(16);
+
+var _reactRouterDom = __webpack_require__(29);
+
+var _classnames = __webpack_require__(86);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _companyUpdateAdvertisement = __webpack_require__(442);
+
+var _companyUpdateAdvertisement2 = _interopRequireDefault(_companyUpdateAdvertisement);
+
+var _TextFieldGroup = __webpack_require__(31);
+
+var _TextFieldGroup2 = _interopRequireDefault(_TextFieldGroup);
+
+var _TextareaFieldGroup = __webpack_require__(439);
+
+var _TextareaFieldGroup2 = _interopRequireDefault(_TextareaFieldGroup);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CompanyUpdateJobAdvertisementById = function (_React$Component) {
+    _inherits(CompanyUpdateJobAdvertisementById, _React$Component);
+
+    function CompanyUpdateJobAdvertisementById(props) {
+        _classCallCheck(this, CompanyUpdateJobAdvertisementById);
+
+        var _this = _possibleConstructorReturn(this, (CompanyUpdateJobAdvertisementById.__proto__ || Object.getPrototypeOf(CompanyUpdateJobAdvertisementById)).call(this, props));
+
+        _this.state = {
+            advertismenet_id: _this.props.match.params.id,
+            advertisement: [],
+            loading_advertisiemet: 'initial',
+            errors: {},
+            isLoading: false,
+            name: '',
+            city: '',
+            description: ''
+        };
+
+        _this.onSubmit = _this.onSubmit.bind(_this);
+        _this.onChange = _this.onChange.bind(_this);
+        return _this;
+    }
+
+    _createClass(CompanyUpdateJobAdvertisementById, [{
+        key: 'loadData',
+        value: function loadData() {
+            var _this2 = this;
+
+            var promise = new Promise(function (resolve, reject) {
+                var company = _this2.props.auth.company;
+
+                _this2.props.getAdvertisementById({ advertismenet_id: _this2.state.advertismenet_id }, company.token).then(function (resData) {
+                    //console.log(resData.data);
+                    _this2.setState({
+                        name: resData.data[0],
+                        description: resData.data[1],
+                        city: resData.data[2],
+                        loading_advertisiemet: 'false'
+                    });
+                    //console.log(this.state);
+                    resolve('This is my data.');
+                }, function (err2) {
+                    reject(err2);
+                });
+            });
+
+            return promise;
+        }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this3 = this;
+
+            this.setState({ loading: 'true' });
+            this.loadData().then(function (resData) {
+                //console.log(this.state);
+            }, function (err) {
+                console.log(err);
+                _this3.props.companyLogout();
+                _this3.context.router.history.push('/');
+            });
+        }
+    }, {
+        key: 'isValid',
+        value: function isValid() {
+            var _validateInput = (0, _companyUpdateAdvertisement2.default)(this.state),
+                errors = _validateInput.errors,
+                isValid = _validateInput.isValid;
+
+            if (!isValid) {
+                this.setState({ errors: errors });
+            }
+
+            return isValid;
+        }
+    }, {
+        key: 'onSubmit',
+        value: function onSubmit(e) {
+            var _this4 = this;
+
+            e.preventDefault();
+            if (this.isValid()) {
+                console.log(this.state);
+                //this.setState({ errors: {}, isLoading: true });
+
+                console.log(this.state);
+                var company = this.props.auth.company;
+
+                var data = {
+                    advertismenet_id: this.state.advertismenet_id,
+                    name: this.state.name,
+                    description: this.state.description,
+                    city: this.state.city
+                };
+                this.props.updateAdvertisementById(data, company.token).then(function (res) {
+                    console.log(res);
+                    if (res.status === 200) {
+
+                        _this4.context.router.history.push('/company-profil');
+                    } else {
+                        console.log(res);
+                        _this4.setState({ errors: { response: res.request.response }, isLoading: false });
+                    }
+                }, function (err) {
+                    if (err.response.status && parseInt(err.response.status) === 404) {
+                        _this4.setState({ errors: { response: "server is not available" }, isLoading: false });
+                    } else if (err.response.status && parseInt(err.response.status) === 401) {
+                        _this4.setState({ errors: { response: err.response.data.errors }, isLoading: false });
+                        _this4.context.router.history.push('/company-login');
+                    } else {
+                        console.log("err in form:");
+                        console.log(err);
+                        _this4.setState({ errors: { response: err.response.data.errors }, isLoading: false });
+                    }
+                });
+            }
+        }
+    }, {
+        key: 'onChange',
+        value: function onChange(e) {
+            this.setState(_defineProperty({}, e.target.name, e.target.value));
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+
+            if (this.state.loading_advertisiemet === 'initial') {
+                return _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Intializing...'
+                );
+            }
+
+            if (this.state.loading_advertisiemet === 'true') {
+                return _react2.default.createElement(
+                    'h2',
+                    null,
+                    'Loading...'
+                );
+            }
+            var _state = this.state,
+                name = _state.name,
+                description = _state.description,
+                city = _state.city,
+                errors = _state.errors,
+                isLoading = _state.isLoading;
+
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'col-md-10 col-md-offset-1' },
+                _react2.default.createElement(
+                    'form',
+                    { onSubmit: this.onSubmit },
+                    _react2.default.createElement(
+                        'h1',
+                        null,
+                        'Company update Advertisement'
+                    ),
+                    errors.response && _react2.default.createElement(
+                        'div',
+                        { className: 'alert alert-danger' },
+                        errors.response
+                    ),
+                    _react2.default.createElement(_TextFieldGroup2.default, {
+                        field: 'name',
+                        label: 'name',
+                        value: name,
+                        error: errors.name,
+                        onChange: this.onChange
+                    }),
+                    _react2.default.createElement(_TextFieldGroup2.default, {
+                        field: 'city',
+                        label: 'City',
+                        value: city,
+                        error: errors.city,
+                        onChange: this.onChange
+                    }),
+                    _react2.default.createElement(_TextareaFieldGroup2.default, {
+                        field: 'description',
+                        label: 'Description',
+                        value: description,
+                        error: errors.description,
+                        onChange: this.onChange
+                    }),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'form-group' },
+                        _react2.default.createElement(
+                            'button',
+                            { className: 'btn btn-warning', disabled: isLoading },
+                            'Update advertisment'
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return CompanyUpdateJobAdvertisementById;
+}(_react2.default.Component);
+
+CompanyUpdateJobAdvertisementById.propTypes = {
+    companyLogout: _react2.default.PropTypes.func.isRequired,
+    getAdvertisementById: _react2.default.PropTypes.func.isRequired,
+    updateAdvertisementById: _react2.default.PropTypes.func.isRequired
+};
+
+CompanyUpdateJobAdvertisementById.contextTypes = {
+    router: _react2.default.PropTypes.object.isRequired
+};
+
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, {
+    companyLogout: _companyAuth.companyLogout,
+    getAdvertisementById: _companyJobAdvertisement.getAdvertisementById,
+    updateAdvertisementById: _companyJobAdvertisement.updateAdvertisementById
+})(CompanyUpdateJobAdvertisementById);
+
+/***/ }),
+/* 442 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = validateInput;
+
+var _validator = __webpack_require__(54);
+
+var _validator2 = _interopRequireDefault(_validator);
+
+var _isEmpty = __webpack_require__(40);
+
+var _isEmpty2 = _interopRequireDefault(_isEmpty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function validateInput(data) {
+    var errors = {};
+
+    if (_validator2.default.isEmpty(data.name)) {
+        errors.name = 'This field is required';
+    }
+
+    if (_validator2.default.isEmpty(data.city)) {
+        errors.city = 'This field is required';
+    }
+
+    if (_validator2.default.isEmpty(data.description)) {
+        errors.description = 'This field is required';
+    }
+
+    if (!_validator2.default.isEmpty(data.description) && data.description.length > 3000) {
+        errors.description = 'This field length is must 0 between 3000 character';
     }
 
     return {

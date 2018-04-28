@@ -55,6 +55,7 @@ import JobseekerAddNewCVPage from "./components/jobseeker/JobseekerAddNewCVPage"
 
 import AdminLoginPage from "./components/login/AdminLoginPage";
 import CompanyAddNewJobAdvertisment from "./components/company/CompanyAddNewJobAdvertisement";
+import CompanyUpdateJobAdvertisementById from "./components/company/CompanyUpdateJobAdvertisementById";
 
 const MyApp = () => (
     <div>
@@ -70,6 +71,7 @@ const MyApp = () => (
             <Route path="/company-signup" component={CompanySignUpPage} />
             <Route path="/company-profil" component={CompanyProfil} />
             <Route path="/company-add-new-advertisment" component={CompanyAddNewJobAdvertisment} />
+            <Route path="/company-update-advertisment-by-id/:id" component={CompanyUpdateJobAdvertisementById} />
 
             <Route path="/admin-login" component={AdminLoginPage} />
 
