@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { companyLogout} from '../../actions/company.auth.action';
-import {getAdvertisements, updateAdvertisementArchiveState} from '../../actions/company.jobAdvertisement.action';
+import {adminLogout} from '../../actions/admin.auth.action';
+import {getAdvertisements} from '../../actions/admin.advertisement.action';
 import {connect} from "react-redux";
 import { Link } from 'react-router-dom';
-class CompanyAdvertisementsList extends React.Component {
+class AdminAdvertisementsList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,8 +16,8 @@ class CompanyAdvertisementsList extends React.Component {
 
     loadData() {
         let promise = new Promise((resolve, reject) => {
-            const { company } = this.props.auth;
-            this.props.getAdvertisements(company.token).then(
+            const { admin } = this.props.auth;
+            this.props.getAdvertisements(admin.token).then(
                 (resData) => {
                     //console.log(resData.data);
                     this.setState({
@@ -46,7 +46,7 @@ class CompanyAdvertisementsList extends React.Component {
                 //console.log(this.state);
             },(err) => {
                 console.log(err);
-                this.props.companyLogout();
+                this.props.adminLogout();
                 this.context.router.history.push('/');
             });
     }
@@ -58,7 +58,7 @@ class CompanyAdvertisementsList extends React.Component {
                 //console.log(this.state);
             },(err) => {
                 console.log(err);
-                this.props.companyLogout();
+                this.props.adminLogout();
                 this.context.router.history.push('/');
             });
     }
@@ -90,9 +90,11 @@ class CompanyAdvertisementsList extends React.Component {
 
 
     }
-    updateAdvertisementById(advertisement_id){
-        this.context.router.history.push('/company-update-advertisment-by-id/'+advertisement_id);
+
+    inspectAdvertisementById(advertisement_id){
+        this.context.router.history.push('/admin-inspect-advertisment-by-id/'+advertisement_id);
     }
+
     color (inspected, archive) {
         if(inspected === '0' && archive === '0'){
             return {backgroundColor: 'yellow'}
@@ -106,6 +108,7 @@ class CompanyAdvertisementsList extends React.Component {
             return {backgroundColor: 'red'}
         }
     }
+
     render() {
 
         if (this.state.loading_advertisiemets === 'initial') {
@@ -120,43 +123,33 @@ class CompanyAdvertisementsList extends React.Component {
 
         return (
             <div className="col-md-10 col-md-offset-1">
-                <h1>Company Advertisements</h1>
+                <h1>Admin Advertisements List</h1>
                 <table className="table">
                     <thead>
-                        <tr>
-                            <th>Job type</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>City</th>
-                            <th>Date</th>
-                            <th>Validate</th>
-                            <th>Archive</th>
-                        </tr>
+                    <tr>
+                        <th>Job type</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>City</th>
+                        <th>Date</th>
+                        <th>Validate</th>
+                    </tr>
                     </thead>
                     <tbody>
                     {
                         advertisements.map((advertisement,i) =>
-                            <tr key={i} style={this.color(advertisement[7],advertisement[8])} >
-                                <td>{advertisement[2]}</td>
-                                <td>{advertisement[3]}</td>
-                                <td>{advertisement[4]}</td>
+                            <tr key={i} style={this.color(advertisement[3],advertisement[4])} >
+
                                 <td>{advertisement[5]}</td>
                                 <td>{advertisement[6]}</td>
-                                <td>{advertisement[7] === "1" ? 'true':'false'}</td>
-                                <td>{advertisement[8] === "0" ?
-                                    <button type="button" className="btn" onClick={
-                                        this.archiveActive.bind(this, advertisement[0],1)
-                                    }>Go to archive</button>
-                                :
-                                    <button type="button" className="btn"  onClick={
-                                        this.archiveActive.bind(this, advertisement[0],0)
-                                    }>Go to active</button>
-                                }
-                                </td>
+                                <td>{advertisement[7]}</td>
+                                <td>{advertisement[8]}</td>
+                                <td>{advertisement[9]}</td>
+                                <td>{advertisement[10] === "1" ? 'true':'false'}</td>
                                 <td>
                                     <button type="button" className="btn btn-warning"  onClick={
-                                        this.updateAdvertisementById.bind(this, advertisement[0])
-                                    }>edit</button>
+                                        this.inspectAdvertisementById.bind(this, advertisement[0])
+                                    }>Inspect</button>
                                 </td>
                             </tr>)
                     }
@@ -168,13 +161,12 @@ class CompanyAdvertisementsList extends React.Component {
 
     }
 }
-CompanyAdvertisementsList.propTypes = {
-    companyLogout: React.PropTypes.func.isRequired,
-    getAdvertisements: React.PropTypes.func.isRequired,
-    updateAdvertisementArchiveState: React.PropTypes.func.isRequired
+AdminAdvertisementsList.propTypes = {
+    adminLogout: React.PropTypes.func.isRequired,
+    getAdvertisements: React.PropTypes.func.isRequired
 }
 
-CompanyAdvertisementsList.contextTypes = {
+AdminAdvertisementsList.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
 
@@ -186,10 +178,9 @@ function mapStateToProps(state) {
 
 
 export default connect(mapStateToProps, {
-    companyLogout,
-    getAdvertisements ,
-    updateAdvertisementArchiveState
-})(CompanyAdvertisementsList);
+    adminLogout,
+    getAdvertisements
+})(AdminAdvertisementsList);
 
 
 

@@ -10,7 +10,7 @@ export function setCurrentAdmin(admin) {
 }
 
 
-export function adminsLogout() {
+export function adminLogout() {
     return dispatch => {
         localStorage.removeItem('adminJwtToken');
         localStorage.removeItem('adminName');

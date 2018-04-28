@@ -74,7 +74,7 @@ class CompanyProfil extends React.Component {
         return (
             <div>
                 <div className="row">
-                    <div className="col-md-4 col-md-offset-4">
+                    <div >
                         <h1>Company Profil</h1>
                     </div>
                     <div className="col-md-4 col-md-offset-4">

@@ -52,7 +52,7 @@ exports.insertNewAdvertisement = (data,reqCodeMsg, callback) =>{
         });
 };
 
-exports.getAdvertisementByCompanyId = (companyId,reqCodeMsg, callback) =>{
+exports.getAdvertisementsByCompanyId = (companyId,reqCodeMsg, callback) =>{
     if(debug)
         console.log("call getAdvertisementByCompanyId function");
     oracledb.getConnection(
@@ -68,7 +68,16 @@ exports.getAdvertisementByCompanyId = (companyId,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  "SELECT JOB_ADVERTISEMENT.ID, JOB_ADVERTISEMENT.COMPANY_ID,JOB_TYPE.JOB_TYPE_NAME,JOB_ADVERTISEMENT.NAME,JOB_ADVERTISEMENT.DESCRIPTION,JOB_ADVERTISEMENT.CITY,JOB_ADVERTISEMENT.JOB_GIVE_UP_DATE,JOB_ADVERTISEMENT.INSPECTED,JOB_ADVERTISEMENT.ARCHIVE FROM JOB_ADVERTISEMENT, JOB_TYPE WHERE COMPANY_ID = :companyId AND JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID";
+                const sql =  "SELECT JOB_ADVERTISEMENT.ID, " +
+                    "JOB_ADVERTISEMENT.COMPANY_ID," +
+                    "JOB_TYPE.JOB_TYPE_NAME," +
+                    "JOB_ADVERTISEMENT.NAME," +
+                    "JOB_ADVERTISEMENT.DESCRIPTION," +
+                    "JOB_ADVERTISEMENT.CITY," +
+                    "JOB_ADVERTISEMENT.JOB_GIVE_UP_DATE," +
+                    "JOB_ADVERTISEMENT.ADV_INSPECTED," +
+                    "JOB_ADVERTISEMENT.ADV_ARCHIVE " +
+                    "FROM JOB_ADVERTISEMENT, JOB_TYPE WHERE COMPANY_ID = :companyId AND JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID";
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, [companyId]
@@ -78,6 +87,8 @@ exports.getAdvertisementByCompanyId = (companyId,reqCodeMsg, callback) =>{
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
+                            //console.log(resp);
+                            //console.log(resp.rows);
                             callback(200, resp.rows);
                         }
                     });
@@ -85,8 +96,7 @@ exports.getAdvertisementByCompanyId = (companyId,reqCodeMsg, callback) =>{
         });
 };
 
-
-exports.getAdvertisementByCompanyId = (data,reqCodeMsg, callback) =>{
+exports.getAdvertisementById = (data,reqCodeMsg, callback) =>{
     if(debug)
         console.log("call getAdvertisementByCompanyId function");
     oracledb.getConnection(
@@ -102,19 +112,23 @@ exports.getAdvertisementByCompanyId = (data,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  "JOB_ADVERTISEMENT.NAME,JOB_ADVERTISEMENT.DESCRIPTION,JOB_ADVERTISEMENT.CITY " +
+                const sql =  "SELECT NAME, DESCRIPTION, CITY " +
                     "FROM JOB_ADVERTISEMENT " +
                     "WHERE COMPANY_ID =:companyId AND ID = :id";
                 if(debug)
                     console.log(sql);
-                connection.execute(sql, [data.companyId, data.advertismenet_id, advert]
+                connection.execute(sql, [
+                        data.company_id,
+                        data.advertismenet_id
+                        ]
                     , (err, resp) => {
                         doRelease(connection);
                         if (err) {
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
-                            callback(200, resp.rows);
+                            console.log(resp);
+                            callback(200, resp.rows[0]);
                         }
                     });
             }
@@ -137,12 +151,12 @@ exports.updateAdvertisementArchiveState = (data,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  'SELECT SET ARCHIVE = :archive FROM JOB_ADVERTISEMENT WHERE ID = :id';
+                const sql =  'SELECT UPDATE_ADVERTISEMENT_ARCHIVE(:id,:archive) FROM dual';
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, [
-                        data.archive,
-                        data.advertisement_id
+                        data.advertisement_id,
+                        data.archive
                     ]
                     , (err, resp) => {
                         doRelease(connection);
@@ -150,6 +164,7 @@ exports.updateAdvertisementArchiveState = (data,reqCodeMsg, callback) =>{
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
+                            console.log(resp.rows);
                             callback(200, resp.rows);
                         }
                     });
@@ -173,21 +188,15 @@ exports.updateAdvertisementById = (data,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  'SELECT SET ' +
-                    'ARCHIVE = 0, ' +
-                    'INSPECTED = 0, ' +
-                    'NAME = :name ' +
-                    'DESCRIPTION = :description ' +
-                    'CITY = :city ' +
-                    ' JOB_ADVERTISEMENT WHERE ID = :id AND COMPANY_ID = :c_id';
+                const sql =  'SELECT UPDATE_ADVERTISEMENT_DATAS(:a_id, :a_com_id,:a_name,:a_desc,:a_city) from DUAL';
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, [
+                        parseInt(data.advertismenet_id),
+                        parseInt(data.company_id),
                         data.name,
                         data.description,
-                        data.city,
-                        data.advertismenet_id,
-                        data.company_id
+                        data.city
                     ]
                     , (err, resp) => {
                         doRelease(connection);

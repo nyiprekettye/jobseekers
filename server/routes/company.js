@@ -7,7 +7,7 @@ const companyAccountManager = require('../modules/company/company-account-manage
 const companyJobTypeManager = require('../modules/company/company-jobType-manager');
 const companyAdvertisementManager = require('../modules/company/company-advertisement-manager');
 let router = express.Router();
-const databaseOfflineMode = true;
+const databaseOfflineMode = false;
 let companyTokens = [];
 
 function requiresAuthentication(request, response, next) {
@@ -319,7 +319,7 @@ router.post('/get-job-advertisements', requiresAuthentication,  function(request
     const token= request.headers.access_token;
     const decodedToken = jwt.decode(token, secret);
     const company_id = decodedToken.id;
-    companyAdvertisementManager.getAdvertisementByCompanyId( company_id, reqCodeMsg, function(e, o){
+    companyAdvertisementManager.getAdvertisementsByCompanyId( company_id, reqCodeMsg, function(e, o){
         if (e === 200) {
             //console.log(o);
             response.status(200).send(o);
@@ -367,9 +367,9 @@ router.post('/get-advertisement-by-id', requiresAuthentication, function(request
                 advertismenet_id: request.body.advertismenet_id
             };
             console.log(data);
-            companyAdvertisementManager.getAdvertisementByCompanyId( data, reqCodeMsg, function(e, o){
+            companyAdvertisementManager.getAdvertisementById( data, reqCodeMsg, function(e, o){
                 if (e === 200) {
-                    response.status(200).send("Sucessfully get advertisement!");
+                    response.status(200).send(o);
                 }else {
                     if (databaseOfflineMode) {
                         let data = [
@@ -405,7 +405,7 @@ router.post('/update-advertisement-by-id', requiresAuthentication, function(requ
         '200': 'result'
         ,'201': '[update-advertisement-by-id]: userName not exist'
         ,'404': '[update-advertisement-by-id]: cant connect to database'
-        ,'405': '[update-advertisement-by-idget-advertisement-by-id]:  query throw error'
+        ,'405': '[update-advertisement-by-id]:  query throw error'
         ,'407': '[update-advertisement-by-id]: didnt get enought parameters'
     };
     let errValues = [];
@@ -471,14 +471,14 @@ router.post('/update-advertisement-archive-row', requiresAuthentication, functio
     let counter = 0;
 
     if(!request.body.advertisement_id){	errValues.push("err advertisement_id");	}else { counter++; }
-    if(!request.body.archive){	errValues.push("err archive");	}else { counter++; }
+    if(typeof request.body.archive_status === 'undefined'){	errValues.push("err archive");	}else { counter++; }
 
 
     if((counter + errValues.length) === 2){
         if(counter === 2){
             const data = {
                 advertisement_id: request.body.advertisement_id,
-                archive: request.body.archive
+                archive: request.body.archive_status
             };
             console.log(data);
             companyAdvertisementManager.updateAdvertisementArchiveState( data, reqCodeMsg, function(e, o){

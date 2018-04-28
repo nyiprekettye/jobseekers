@@ -37,7 +37,7 @@ class AdminLoginForm extends React.Component {
             this.props.adminLogin(this.state).then(
                 (res) => {
                     if (res.status === 200){
-                        this.context.router.history.push('/')
+                        this.context.router.history.push('/admin-panel')
                     }else {
                         this.setState({errors: {response: res.request.response}, isLoading: false})
                     }

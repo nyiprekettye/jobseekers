@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { logout } from '../actions/auth.action';
 import { jobseekersLogout } from '../actions/jobseeker.auth.action';
 import { companyLogout } from '../actions/company.auth.action';
+import { adminLogout } from '../actions/admin.auth.action';
 
 class NavigationBar extends React.Component {
     logout(e) {
@@ -22,6 +23,11 @@ class NavigationBar extends React.Component {
         this.props.companyLogout();
         this.context.router.history.push('/')
     }
+    adminLogout(e) {
+            e.preventDefault();
+            this.props.adminLogout();
+            this.context.router.history.push('/')
+        }
 
     render() {
         const {
@@ -29,7 +35,8 @@ class NavigationBar extends React.Component {
             jobseekersIsAuthenticated,
             jobseekersName,
             companyIsAuthenticated,
-            companyName
+            companyName,
+            adminIsAuthenticated
         } = this.props.auth;
         const jobseekersLinks= (
             <ul className="nav navbar-nav navbar-right">
@@ -52,6 +59,12 @@ class NavigationBar extends React.Component {
                 <li><a href="#" onClick={this.logout.bind(this)}>Logout User!</a></li>
             </ul>
         );
+        const  adminLinks  = (
+            <ul className="nav navbar-nav navbar-right">
+                <li><Link to="/admin-panel">Admin panel</Link></li>
+                <li><a href="#" onClick={this.adminLogout.bind(this)}>Logout ADMIN!</a></li>
+            </ul>
+        );
 
         const guestLinks = (
             <ul className="nav navbar-nav navbar-right">
@@ -70,6 +83,7 @@ class NavigationBar extends React.Component {
                     { jobseekersIsAuthenticated ? jobseekersLinks : '' }
                     { companyIsAuthenticated ? companyLinks : '' }
                     { isAuthenticated ? userLinks : '' }
+                    { adminIsAuthenticated ? adminLinks : '' }
                 </span>
             </div>
         );
@@ -83,7 +97,10 @@ class NavigationBar extends React.Component {
 
                     <div className="collapse navbar-collapse">
                         {jobseekersIsAuthenticated}
-                        { ( isAuthenticated || jobseekersIsAuthenticated || companyIsAuthenticated )
+                        { ( isAuthenticated
+                            || jobseekersIsAuthenticated
+                            || companyIsAuthenticated
+                            || adminIsAuthenticated )
                             ? authSomebody : guestLinks }
                     </div>
                 </div>
@@ -96,6 +113,7 @@ NavigationBar.propTypes = {
     auth: React.PropTypes.object.isRequired,
     logout: React.PropTypes.func.isRequired,
     jobseekersLogout: React.PropTypes.func.isRequired,
+    adminLogout: React.PropTypes.func.isRequired,
     companyLogout: React.PropTypes.func.isRequired
 }
 
@@ -109,4 +127,9 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { logout, jobseekersLogout, companyLogout })(NavigationBar);
+export default connect(mapStateToProps, {
+    logout,
+    jobseekersLogout,
+    adminLogout,
+    companyLogout
+})(NavigationBar);

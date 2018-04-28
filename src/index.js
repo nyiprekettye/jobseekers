@@ -56,6 +56,8 @@ import JobseekerAddNewCVPage from "./components/jobseeker/JobseekerAddNewCVPage"
 import AdminLoginPage from "./components/login/AdminLoginPage";
 import CompanyAddNewJobAdvertisment from "./components/company/CompanyAddNewJobAdvertisement";
 import CompanyUpdateJobAdvertisementById from "./components/company/CompanyUpdateJobAdvertisementById";
+import AdminPanel from "./components/admin/AdminPanel";
+import AdminAdvertisementInspectPage from "./components/admin/AdminAdvertisementInspectPage";
 
 const MyApp = () => (
     <div>
@@ -74,6 +76,8 @@ const MyApp = () => (
             <Route path="/company-update-advertisment-by-id/:id" component={CompanyUpdateJobAdvertisementById} />
 
             <Route path="/admin-login" component={AdminLoginPage} />
+            <Route path="/admin-panel" component={AdminPanel} />
+            <Route path="/admin-inspect-advertisment-by-id/:id" component={AdminAdvertisementInspectPage} />
 
 
         </App>
