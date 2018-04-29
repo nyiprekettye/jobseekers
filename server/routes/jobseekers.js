@@ -142,17 +142,19 @@ router.post('/reg', function(request, response) {
     if(!request.body.pw){	errValues.push("err pw");	}else { counter++; }
     if(!request.body.email){	errValues.push("err email");	}else { counter++; }
     if(!request.body.city){	errValues.push("err city");	}else { counter++; }
+    if(!request.body.birth){	errValues.push("err birth");	}else { counter++; }
 
-    if((counter + errValues.length) === 4){
-        if(counter === 4){
+    if((counter + errValues.length) === 5){
+        if(counter === 5){
             const name = request.body.name;
             const pw = request.body.pw;
             const email = request.body.email;
             const city = request.body.city;
+            const birth = request.body.birth;
 
             JobseekersAccountManager.authUserEmailAndName(name,email, reqCodeMsg, function(e, o){
                 if (e === 201) {
-                    JobseekersAccountManager.regJobseeker( name, pw, email,city, reqCodeMsg, function(e, o){
+                    JobseekersAccountManager.regJobseeker( name, pw, email,city, birth, reqCodeMsg, function(e, o){
                         if (e === 200) {
                             response.status(200).send("Sucessfully registrater!");
                         }else {
@@ -180,7 +182,8 @@ router.post('/jobseeker-data', requiresAuthentication, function(request, respons
     let data = {
         email:"email",
         username: decodedToken.userName,
-        city: "varos"
+        city: "varos",
+        birth: "1993"
     };
     response.status(200).send(data);
 });

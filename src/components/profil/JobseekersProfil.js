@@ -12,6 +12,7 @@ class JobseekersProfil extends React.Component {
             username: '',
             email: '',
             city: '',
+            birth: ''
         };
     }
 
@@ -25,6 +26,7 @@ class JobseekersProfil extends React.Component {
                         username:resData.data.username,
                         email:resData.data.email,
                         city:resData.data.city,
+                        birth:resData.data.birth,
                         loading: 'false'
                     });
                     //console.log(this.state);
@@ -76,7 +78,10 @@ class JobseekersProfil extends React.Component {
                     <span><strong>Email : </strong>{this.state.email}</span>
                 </div>
                 <div className="col-md-4 col-md-offset-4">
-                    <span><strong>Eity : </strong>{this.state.city}</span>
+                    <span><strong>City : </strong>{this.state.city}</span>
+                </div>
+                <div className="col-md-4 col-md-offset-4">
+                    <span><strong>Birth : </strong>{this.state.birth}</span>
                 </div>
                 <h1>Linkek</h1>
                 <ul className="nav navbar-nav navbar-right">

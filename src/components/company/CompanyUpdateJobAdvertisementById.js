@@ -20,7 +20,8 @@ class CompanyUpdateJobAdvertisementById extends React.Component {
             isLoading: false,
             name : '',
             city : '',
-            description: ''
+            description: '',
+            payment: ''
         };
 
 
@@ -41,6 +42,7 @@ class CompanyUpdateJobAdvertisementById extends React.Component {
                         name:resData.data[0],
                         description:resData.data[1],
                         city:resData.data[2],
+                        payment:resData.data[3],
                         loading_advertisiemet: 'false'
                     });
                     //console.log(this.state);
@@ -93,7 +95,8 @@ class CompanyUpdateJobAdvertisementById extends React.Component {
                 advertismenet_id: this.state.advertismenet_id,
                 name : this.state.name,
                 description : this.state.description,
-                city : this.state.city
+                city : this.state.city,
+                payment : this.state.payment
             }
             this.props.updateAdvertisementById(data, company.token).then(
                 (res) => {
@@ -137,7 +140,7 @@ class CompanyUpdateJobAdvertisementById extends React.Component {
         if (this.state.loading_advertisiemet === 'true') {
             return <h2>Loading...</h2>;
         }
-        const {name, description, city, errors, isLoading} =  this.state;
+        const {name, description, city, payment, errors, isLoading} =  this.state;
 
 
         return (
@@ -160,6 +163,15 @@ class CompanyUpdateJobAdvertisementById extends React.Component {
                         value={city}
                         error={errors.city}
                         onChange={this.onChange}
+                    />
+
+                    <TextFieldGroup
+                        field="payment"
+                        label="Payment (not public)"
+                        value={payment}
+                        error={errors.payment}
+                        onChange={this.onChange}
+                        type="number"
                     />
 
                     <TextareaFieldGroup

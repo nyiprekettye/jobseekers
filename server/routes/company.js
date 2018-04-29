@@ -273,18 +273,20 @@ router.post('/new-advertisement', requiresAuthentication, function(request, resp
     if(!request.body.city){	errValues.push("err city");	}else { counter++; }
     if(!request.body.description){	errValues.push("err description");	}else { counter++; }
     if(!request.body.current_job_type){	errValues.push("err current_job_type");	}else { counter++; }
+    if(!request.body.payment){	errValues.push("err payment");	}else { counter++; }
     const token= request.headers.access_token;
     const decodedToken = jwt.decode(token, secret);
     const company_id = decodedToken.id;
 
-    if((counter + errValues.length) === 4){
-        if(counter === 4){
+    if((counter + errValues.length) === 5){
+        if(counter === 5){
             const data = {
                 company_id:company_id,
                 name: request.body.name,
                 city : request.body.city,
                 description : request.body.description,
-                job_type_id: request.body.current_job_type
+                job_type_id: request.body.current_job_type,
+                payment: request.body.payment
             };
             console.log(data);
             companyAdvertisementManager.insertNewAdvertisement( data, reqCodeMsg, function(e, o){
@@ -415,18 +417,20 @@ router.post('/update-advertisement-by-id', requiresAuthentication, function(requ
     if(!request.body.name){	errValues.push("err name");	}else { counter++; }
     if(!request.body.description){	errValues.push("err description");	}else { counter++; }
     if(!request.body.city){	errValues.push("err city");	}else { counter++; }
+    if(!request.body.payment){	errValues.push("err payment");	}else { counter++; }
     const token= request.headers.access_token;
     const decodedToken = jwt.decode(token, secret);
     const company_id = decodedToken.id;
 
-    if((counter + errValues.length) === 4){
-        if(counter === 4){
+    if((counter + errValues.length) === 5){
+        if(counter === 5){
             const data = {
                 company_id:company_id,
                 advertismenet_id: request.body.advertismenet_id,
                 name: request.body.name,
                 description: request.body.description,
-                city: request.body.city
+                city: request.body.city,
+                payment: request.body.payment
             };
             console.log(data);
             companyAdvertisementManager.updateAdvertisementById( data, reqCodeMsg, function(e, o){

@@ -25,7 +25,9 @@ exports.getAdvertisements = (reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  "SELECT * FROM JOB_ADVERTISEMENT " ;
+                const sql =  "SELECT JOB_ADVERTISEMENT.*, JOB_TYPE.JOB_TYPE_NAME " +
+                    "FROM JOB_ADVERTISEMENT, JOB_TYPE " +
+                    "WHERE JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID" ;
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, []

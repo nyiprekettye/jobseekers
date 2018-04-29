@@ -14,6 +14,7 @@ class CompanyAddNewJobAdvertisement extends React.Component {
             name: 'It állás',
             city: 'Szeged',
             description: 'description value',
+            payment: '150000',
             current_job_type:'-1',
             job_types :[],
             errors: {},
@@ -75,13 +76,14 @@ class CompanyAddNewJobAdvertisement extends React.Component {
         e.preventDefault();
         if (this.isValid()) {
             //this.setState({ errors: {}, isLoading: true });
-            console.log(this.state);
+            //console.log(this.state);
             const { company } = this.props.auth;
             const data = {
                 name : this.state.name,
                 description : this.state.description,
                 city : this.state.city,
-                current_job_type: this.state.current_job_type
+                current_job_type: this.state.current_job_type,
+                payment: this.state.payment
             }
             this.props.companyNewAdvertisement(company.token, data).then(
                 (res) => {
@@ -125,7 +127,7 @@ class CompanyAddNewJobAdvertisement extends React.Component {
         if (this.state.loadingJobAdvertisment === 'true') {
             return <h2>Loading...</h2>;
         }
-        const { errors, name, city, job_types, current_job_type,description,isLoading } = this.state;
+        const { errors, name, city, job_types, current_job_type,description, payment, isLoading } = this.state;
 
         return (
             <div className="row">
@@ -147,7 +149,6 @@ class CompanyAddNewJobAdvertisement extends React.Component {
                         <select onChange={this.onChange}
                                 value={current_job_type}
                                 name="current_job_type">
-                            {console.log(job_types)}
                             <option value='-1'>Select</option>
                             {
                                 job_types.map(job_type =>
@@ -170,6 +171,15 @@ class CompanyAddNewJobAdvertisement extends React.Component {
                         value={city}
                         error={errors.city}
                         onChange={this.onChange}
+                    />
+
+                    <TextFieldGroup
+                        field="payment"
+                        label="payment (not public)"
+                        value={payment}
+                        error={errors.payment}
+                        onChange={this.onChange}
+                        type="number"
                     />
 
                     <TextareaFieldGroup

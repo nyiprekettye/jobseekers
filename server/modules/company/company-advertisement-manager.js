@@ -26,7 +26,7 @@ exports.insertNewAdvertisement = (data,reqCodeMsg, callback) =>{
                 if(debug)
                     console.log("Successfull create db connection");
                 const sql = "SELECT JOB_ADVERTISEMENT_INSERT_FUNC(" +
-                    ":q_company_id, :q_job_type_id, :q_name, :q_desc, :q_city" +
+                    ":q_company_id, :q_job_type_id, :q_name, :q_desc, :q_city, :q_pay" +
                     ") from dual";
                 if(debug)
                     console.log(sql);
@@ -37,7 +37,8 @@ exports.insertNewAdvertisement = (data,reqCodeMsg, callback) =>{
                         data.job_type_id,
                         data.name,
                         data.description,
-                        data.city
+                        data.city,
+                        data.payment
                     ]
                     , (err, resp) => {
                         doRelease(connection);
@@ -76,7 +77,8 @@ exports.getAdvertisementsByCompanyId = (companyId,reqCodeMsg, callback) =>{
                     "JOB_ADVERTISEMENT.CITY," +
                     "JOB_ADVERTISEMENT.JOB_GIVE_UP_DATE," +
                     "JOB_ADVERTISEMENT.ADV_INSPECTED," +
-                    "JOB_ADVERTISEMENT.ADV_ARCHIVE " +
+                    "JOB_ADVERTISEMENT.ADV_ARCHIVE," +
+                    "JOB_ADVERTISEMENT.PAYMENT " +
                     "FROM JOB_ADVERTISEMENT, JOB_TYPE WHERE COMPANY_ID = :companyId AND JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID";
                 if(debug)
                     console.log(sql);
@@ -112,7 +114,7 @@ exports.getAdvertisementById = (data,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  "SELECT NAME, DESCRIPTION, CITY " +
+                const sql =  "SELECT NAME, DESCRIPTION, CITY, PAYMENT " +
                     "FROM JOB_ADVERTISEMENT " +
                     "WHERE COMPANY_ID =:companyId AND ID = :id";
                 if(debug)
@@ -127,7 +129,7 @@ exports.getAdvertisementById = (data,reqCodeMsg, callback) =>{
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
-                            console.log(resp);
+                           // console.log(resp);
                             callback(200, resp.rows[0]);
                         }
                     });
@@ -188,7 +190,7 @@ exports.updateAdvertisementById = (data,reqCodeMsg, callback) =>{
             } else {
                 if(debug)
                     console.log("Successfull create db connection");
-                const sql =  'SELECT UPDATE_ADVERTISEMENT_DATAS(:a_id, :a_com_id,:a_name,:a_desc,:a_city) from DUAL';
+                const sql =  'SELECT UPDATE_ADVERTISEMENT_DATAS(:a_id, :a_com_id,:a_name,:a_desc,:a_city,:a_pay) from DUAL';
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, [
@@ -196,7 +198,8 @@ exports.updateAdvertisementById = (data,reqCodeMsg, callback) =>{
                         parseInt(data.company_id),
                         data.name,
                         data.description,
-                        data.city
+                        data.city,
+                        data.payment
                     ]
                     , (err, resp) => {
                         doRelease(connection);

@@ -5,6 +5,7 @@ import TextFieldGroup from '../common/TextFieldGroup';
 import validateInput from "../../utils/validations/jobseekers.signup.validation"
 
 import { jobseekerSignUp } from '../../actions/jobseeker.auth.action';
+import classnames from "classnames";
 
 class JobseekersSignUpForm extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class JobseekersSignUpForm extends React.Component {
             pw: 'asd',
             pw2: 'asd',
             city: 'asd',
+            birth: 'asd',
             errors: { asd:'asd'
             },
             isLoading: false
@@ -43,7 +45,8 @@ class JobseekersSignUpForm extends React.Component {
                 name :this.state.username,
                 email: this.state.email,
                 pw: this.state.pw,
-                city :this.state.city
+                city :this.state.city,
+                birth :this.state.birth
             };
 
             this.props.jobseekerSignUp(data)
@@ -62,13 +65,21 @@ class JobseekersSignUpForm extends React.Component {
         this.setState({ [e.target.name]: e.target.value });
     }
 
+
     render() {
+        let years = [];
+
+        for (let i=2014; i>1931; i--) {
+            years.push(i);
+        }
+
         const {
             username,
             email,
             pw,
             pw2,
             city,
+            birth,
             errors ,
             isLoading
         } = this.state;
@@ -120,7 +131,29 @@ class JobseekersSignUpForm extends React.Component {
                     onChange={this.onChange}
                 />
 
-                <div className="form-group"><button className="btn btn-primary btn-lg" disabled={isLoading}>Login</button></div>
+
+                <div className={classnames('form-group', { 'has-error': errors.birth })}>
+                    <label className="control-label">Job Types</label>
+                    <select onChange={this.onChange}
+                            value={birth}
+                            name="birth">
+                        <option value='-1'>Select</option>
+                        {
+                            years.map(year =>
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            )
+                        }
+                    </select>
+                    {
+                        errors.current_job_type && <span className="help-block">
+                                {errors.current_job_type}
+                            </span>
+                    }
+                </div>
+
+                <div className="form-group"><button className="btn btn-primary btn-lg" disabled={isLoading}>Register</button></div>
             </form>
         );
     }

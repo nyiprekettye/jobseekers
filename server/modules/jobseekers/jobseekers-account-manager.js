@@ -93,9 +93,7 @@ exports.authUserEmailAndName = (username, email, reqCodeMsg, callback) =>{
         });
 };
 
-
-
-exports.regJobseeker = (name, pw, email,city, reqCodeMsg, callback) =>{
+exports.regJobseeker = (name, pw, email,city, birth, reqCodeMsg, callback) =>{
     oracledb.getConnection(
         {
             user          : dbConfig.user,
@@ -109,10 +107,10 @@ exports.regJobseeker = (name, pw, email,city, reqCodeMsg, callback) =>{
             } else {
 
 
-                const sql = `select JOBSEEKERS_INSERT_FUNC(:name, :email, :pw, :city) from dual`;
+                const sql = `select JOBSEEKERS_INSERT_FUNC(:name, :email, :pw, :city, :birth) from dual`;
                 if (debug)
                     console.log(sql);
-                connection.execute(sql, [name, email, pw, city]
+                connection.execute(sql, [name, email, pw, city, birth]
                     , (err, rows) => {
                         doRelease(connection);
                         if (err) {

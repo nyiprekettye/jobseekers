@@ -129,6 +129,7 @@ class CompanyAdvertisementsList extends React.Component {
                             <th>Description</th>
                             <th>City</th>
                             <th>Date</th>
+                            <th>Payment (not public)</th>
                             <th>Validate</th>
                             <th>Archive</th>
                         </tr>
@@ -142,6 +143,7 @@ class CompanyAdvertisementsList extends React.Component {
                                 <td>{advertisement[4]}</td>
                                 <td>{advertisement[5]}</td>
                                 <td>{advertisement[6]}</td>
+                                <td>{advertisement[9]}</td>
                                 <td>{advertisement[7] === "1" ? 'true':'false'}</td>
                                 <td>{advertisement[8] === "0" ?
                                     <button type="button" className="btn" onClick={

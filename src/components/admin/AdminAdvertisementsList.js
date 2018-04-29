@@ -132,7 +132,7 @@ class AdminAdvertisementsList extends React.Component {
                         <th>Description</th>
                         <th>City</th>
                         <th>Date</th>
-                        <th>Validate</th>
+                        <th>Payment</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -140,12 +140,13 @@ class AdminAdvertisementsList extends React.Component {
                         advertisements.map((advertisement,i) =>
                             <tr key={i} style={this.color(advertisement[3],advertisement[4])} >
 
+                                <td>{advertisement[10]}</td>
                                 <td>{advertisement[5]}</td>
                                 <td>{advertisement[6]}</td>
                                 <td>{advertisement[7]}</td>
-                                <td>{advertisement[8]}</td>
                                 <td>{advertisement[9]}</td>
-                                <td>{advertisement[10] === "1" ? 'true':'false'}</td>
+
+                                <td>{advertisement[8]}</td>
                                 <td>
                                     <button type="button" className="btn btn-warning"  onClick={
                                         this.inspectAdvertisementById.bind(this, advertisement[0])
