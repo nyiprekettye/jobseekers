@@ -4,8 +4,10 @@ const jwt = require('jwt-simple');
 const secret = 'jwtuserTokensecret';
 const _ = require('underscore');
 const JobseekersAccountManager = require('../modules/jobseekers/jobseekers-account-manager');
+const JobseekersJobTypesManager = require('../modules/jobseekers/jobseekers-jobTypes-mannager');
+const JobseekersApplyJobManager = require('../modules/jobseekers/jobseekers-applyJob-manager');
 let router = express.Router();
-
+const databaseOfflineMode = true;
 let userTokens = [];
 
 function requiresAuthentication(request, response, next) {
@@ -186,6 +188,277 @@ router.post('/jobseeker-data', requiresAuthentication, function(request, respons
         birth: "1993"
     };
     response.status(200).send(data);
+});
+
+router.post('/get-job-types', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/get-job-types");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-job-types]: userName not exist'
+        ,'404': '[get-job-types]: cant connect to database'
+        ,'405': '[get-job-types]:  query throw error'
+    };
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const jobseeker_id = decodedToken.id;
+
+    JobseekersJobTypesManager.getTaggedJobTypes( jobseeker_id, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            JobseekersJobTypesManager.getNotTaggedJobTypes( jobseeker_id, reqCodeMsg, function(e2, o2){
+                if (e2 === 200) {
+                    //console.log(o);
+                    let data = {
+                        taggedJobTypes:o,
+                        otherJobTypes:o2
+                    };
+                    response.status(200).send(data);
+                }else {
+
+                    if (databaseOfflineMode){
+                        let data = [
+                           ];
+                        console.log(o2);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    } else {
+                        response.status(e2).send(o2);
+                    }
+                }
+            });
+        }else {
+
+            if (databaseOfflineMode){
+                let data = {
+                    taggedJobTypes:[
+                        [1,'valam'],
+                        [2,'valam2'],
+                        [3,'valam3']
+                    ],
+                    otherJobTypes:[
+                        [4,'valam4'],
+                        [5,'valam5'],
+                        [6,'valam6']
+                    ]
+            };
+                console.log(o);
+                console.log('But sent test data!');
+                response.status(200).send(data);
+            } else {
+                response.status(e).send(o);
+            }
+        }
+    });
+});
+
+router.post('/add-new-job-type', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/add-new-job-type");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[add-new-job-type]: userName not exist'
+        ,'404': '[add-new-job-type]: cant connect to database'
+        ,'405': '[add-new-job-type]:  query throw error'
+        ,'406': '[add-new-job-type]: userName or email already exist'
+        ,'407': '[add-new-job-type]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobTypeId){errValues.push("err jobTypeId");	}else { counter++; }
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const token= request.headers.access_token;
+            const decodedToken = jwt.decode(token, secret);
+           const data = {
+                jobseeker_id:decodedToken.id,
+                jobTypeId:request.body.jobTypeId
+            }
+            JobseekersJobTypesManager.insertTaggedJobTypes( data, reqCodeMsg, function(e, o){
+                    if (e === 200) {
+                        response.status(200).send("Sucessfully add new jobseekers job type!");
+                    }else {
+                        response.status(e).send(o);
+                    }
+                });
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/del-job-type', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/del-job-type");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[del-job-type]: userName not exist'
+        ,'404': '[del-job-type]: cant connect to database'
+        ,'405': '[del-job-type]:  query throw error'
+        ,'406': '[del-job-type]: userName or email already exist'
+        ,'407': '[del-job-type]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobseekerJobTypeId){	errValues.push("err jobseekerJobTypeId");	}else { counter++; }
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const token= request.headers.access_token;
+            const decodedToken = jwt.decode(token, secret);
+            const data = {
+                jobseeker_id:decodedToken.id,
+                jobseekerJobTypeId:request.body.jobseekerJobTypeId
+            }
+            JobseekersJobTypesManager.delTaggedJobTypes( data, reqCodeMsg, function(e, o){
+                    if (e === 200) {
+                        response.status(200).send("Sucessfully del jobseekers job type!");
+                    }else {
+                        response.status(e).send(o);
+                    }
+                });
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/get-apply-job', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/get-apply-job");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-apply-job]: userName not exist'
+        ,'404': '[get-apply-job]: cant connect to database'
+        ,'405': '[get-apply-job]:  query throw error'
+        ,'406': '[get-apply-job]: userName or email already exist'
+        ,'407': '[get-apply-job]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobAdvertisementID){errValues.push("err jobAdvertisementID");	}else { counter++; }
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const token= request.headers.access_token;
+            const decodedToken = jwt.decode(token, secret);
+            const data = {
+                jobseeker_id:decodedToken.id,
+                jobAdvertisementID:request.body.jobAdvertisementID
+            }
+            JobseekersApplyJobManager.getApplyJob( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            //console.log(request);
+            console.log(request.body);
+            response.status(407).send(errValues);
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/add-new-apply-job', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/add-new-apply-job");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[add-new-apply-job]: userName not exist'
+        ,'404': '[add-new-apply-job]: cant connect to database'
+        ,'405': '[add-new-apply-job]:  query throw error'
+        ,'406': '[add-new-apply-job]: userName or email already exist'
+        ,'407': '[add-new-apply-job]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobAdvertisementId){errValues.push("err jobAdvertisementID");	}else { counter++; }
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const token= request.headers.access_token;
+            const decodedToken = jwt.decode(token, secret);
+            const data = {
+                jobseeker_id:decodedToken.id,
+                jobAdvertisementId:request.body.jobAdvertisementId
+            }
+            JobseekersApplyJobManager.insertNewApplyJob( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Sucessfully add new apply job!");
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            //console.log(request);
+            console.log(request.body);
+            response.status(407).send(errValues);
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/del-apply-job', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/del-apply-job");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[del-apply-job]: userName not exist'
+        ,'404': '[del-apply-job]: cant connect to database'
+        ,'405': '[del-apply-job]:  query throw error'
+        ,'406': '[del-apply-job]: userName or email already exist'
+        ,'407': '[del-apply-job]: didnt get enought parameters'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.applyJobId){errValues.push("err applyJobId");	}else { counter++; }
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                applyJobId:request.body.applyJobId
+            }
+            console.log(data);
+            JobseekersApplyJobManager.delApplyJob( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send("Sucessfully add delete apply job!");
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            //console.log(request);
+            console.log(request.body);
+            response.status(407).send(errValues);
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
 });
 
 

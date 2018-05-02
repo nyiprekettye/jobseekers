@@ -37,11 +37,14 @@ exports.authJobseekers = (user, pass, reqCodeMsg, callback) =>{
                             console.error(err);
                             callback(405, reqCodeMsg[405]);
                         } else {
-                            console.log("sikeres lekérdezés");
-                            console.log(resp.rows[0]);
+                            if(debug)
+                                console.log("sikeres lekérdezés");
+                            if(debug)
+                                console.log(resp.rows[0]);
                             if (resp.rows.length > 0) { // found jobseekers with this name
                                 if (resp.rows[0][2] === pass) { // the passworld is correct
-                                    console.log(resp.rows[0][0]);
+                                    if(debug)
+                                        console.log(resp.rows[0][0]);
                                     callback(200, resp.rows[0][0]);
 
                                 } else {// the passworld doesnt match

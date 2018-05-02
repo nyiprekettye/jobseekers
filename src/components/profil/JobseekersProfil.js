@@ -1,6 +1,7 @@
 
 import React from 'react';
 import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.auth.action';
+import  JobseekerJobTypesPage from '../../components/jobseeker/JobseekerJobTypesPage';
 import {connect} from "react-redux";
 import { Link } from 'react-router-dom';
 class JobseekersProfil extends React.Component {
@@ -68,26 +69,29 @@ class JobseekersProfil extends React.Component {
 
         return (
             <div className="row">
-                <div className="col-md-4 col-md-offset-4">
+                <div className="col-md-10 col-md-offset-1">
                     <h1>Jobseekers Profil</h1>
                 </div>
-                <div className="col-md-4 col-md-offset-4">
+                <div className="col-md-10 col-md-offset-1">
                     <span><strong>Username :</strong> {this.state.username}</span>
                 </div>
-                <div className="col-md-4 col-md-offset-4">
+                <div className="col-md-10 col-md-offset-1">
                     <span><strong>Email : </strong>{this.state.email}</span>
                 </div>
-                <div className="col-md-4 col-md-offset-4">
+                <div className="col-md-10 col-md-offset-1">
                     <span><strong>City : </strong>{this.state.city}</span>
                 </div>
-                <div className="col-md-4 col-md-offset-4">
+                <div className="col-md-10 col-md-offset-1">
                     <span><strong>Birth : </strong>{this.state.birth}</span>
                 </div>
                 <h1>Linkek</h1>
-                <ul className="nav navbar-nav navbar-right">
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/jobseeker-add-new-cv">/jobseeker-add-new-cv</Link></li>
-                </ul>
+                <div className="col-md-10 col-md-offset-1">
+                    <ul className="nav navbar-nav navbar-left">
+                        <li><Link to="/">Home</Link></li>
+                        <li><Link to="/jobseeker-add-new-cv">/jobseeker-add-new-cv</Link></li>
+                    </ul>
+                </div>
+                <JobseekerJobTypesPage/>
             </div>
         );
     }

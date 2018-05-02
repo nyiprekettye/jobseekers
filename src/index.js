@@ -43,7 +43,6 @@ if (localStorage.companyJwtToken,localStorage.companyName) {
 }
 
 import Greetings from './components/Greetings';
-import SignupPage from './components/signup/SignupPage';
 import JobseekersLoginPage from './components/login/JobseekersLoginPage';
 import CompanyLoginPage from './components/login/CompanyLoginPage';
 import App from "./components/App";
@@ -58,12 +57,17 @@ import CompanyAddNewJobAdvertisment from "./components/company/CompanyAddNewJobA
 import CompanyUpdateJobAdvertisementById from "./components/company/CompanyUpdateJobAdvertisementById";
 import AdminPanel from "./components/admin/AdminPanel";
 import AdminAdvertisementInspectPage from "./components/admin/AdminAdvertisementInspectPage";
+import SearchResultPage from "./components/SearchResultPage";
+import AdvertisementPage from "./components/AdvertisementPage";
 
 const MyApp = () => (
     <div>
         <App>
             <Greetings />
-            <Route path="/signup" component={SignupPage} />
+            <Route path="/search/:searchText" component={SearchResultPage} />
+            <Route path="/advertisement/:advertisement_id" component={AdvertisementPage} />
+
+
             <Route path="/jobseekers-login" component={JobseekersLoginPage} />
             <Route path="/jobseekers-signup" component={JobseekersSignUpPage} />
             <Route path="/jobseeler-profil" component={JobseekersProfil} />

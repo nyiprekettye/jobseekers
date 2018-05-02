@@ -6,6 +6,7 @@ import { logout } from '../actions/auth.action';
 import { jobseekersLogout } from '../actions/jobseeker.auth.action';
 import { companyLogout } from '../actions/company.auth.action';
 import { adminLogout } from '../actions/admin.auth.action';
+import SearchPage from "./SearchPage";
 
 class NavigationBar extends React.Component {
     logout(e) {
@@ -42,7 +43,7 @@ class NavigationBar extends React.Component {
             <ul className="nav navbar-nav navbar-right">
                 <li><div className="navbar-brand">Welcome {jobseekersName}!</div></li>
                 <li><Link to="/jobseeler-profil">Jobseeker Profil</Link></li>
-                <li><a href="#" onClick={this.jobseekersLogout.bind(this)}>Logout jobseeker!</a></li>
+                <li><a href="/" onClick={this.jobseekersLogout.bind(this)}>Logout jobseeker!</a></li>
             </ul>
         );
 
@@ -50,26 +51,25 @@ class NavigationBar extends React.Component {
             <ul className="nav navbar-nav navbar-right">
                 <li><div className="navbar-brand">Welcome cég: {companyName}!</div></li>
                 <li><Link to="/company-profil">Company Profil</Link></li>
-                <li><a href="#" onClick={this.companyLogout.bind(this)}>Logout Company!</a></li>
+                <li><a href="/" onClick={this.companyLogout.bind(this)}>Logout Company!</a></li>
             </ul>
         );
 
         const  userLinks  = (
             <ul className="nav navbar-nav navbar-right">
-                <li><a href="#" onClick={this.logout.bind(this)}>Logout User!</a></li>
+                <li><a href="/" onClick={this.logout.bind(this)}>Logout User!</a></li>
             </ul>
         );
         const  adminLinks  = (
             <ul className="nav navbar-nav navbar-right">
                 <li><Link to="/admin-panel">Admin panel</Link></li>
-                <li><a href="#" onClick={this.adminLogout.bind(this)}>Logout ADMIN!</a></li>
+                <li><a href="/" onClick={this.adminLogout.bind(this)}>Logout ADMIN!</a></li>
             </ul>
         );
 
         const guestLinks = (
             <ul className="nav navbar-nav navbar-right">
                 <li><div className="navbar-brand">Welcome {jobseekersName}!</div></li>
-                <li><Link to="/sigli">Sign up</Link></li>
                 <li><Link to="/admin-login">admin-login</Link></li>
                 <li><Link to="/jobseekers-signup">jobseekers-Sign Up</Link></li>
                 <li><Link to="/jobseekers-login">jobseekers-login</Link></li>
@@ -93,6 +93,7 @@ class NavigationBar extends React.Component {
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <Link to="/" className="navbar-brand">Red Dice</Link>
+                        <SearchPage/>
                     </div>
 
                     <div className="collapse navbar-collapse">
