@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 import jobseekers from './server/routes/jobseekers';
 import company from './server/routes/company';
 import admin from './server/routes/admin';
+import anonymous from './server/routes/anonymous';
 
 
 app.set('port', process.env.PORT || 8080);
@@ -29,6 +30,7 @@ app.use(session({
 app.use('/api/jobseekers', jobseekers);
 app.use('/api/company', company);
 app.use('/api/admin', admin);
+app.use('/api/anonymous', anonymous);
 
 app.get('/*app.bundle.js', (req, res) => {
     console.log('Serving app.bundle.js: ', req.url);

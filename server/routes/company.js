@@ -6,6 +6,8 @@ const _ = require('underscore');
 const companyAccountManager = require('../modules/company/company-account-manager');
 const companyJobTypeManager = require('../modules/company/company-jobType-manager');
 const companyAdvertisementManager = require('../modules/company/company-advertisement-manager');
+const companyApplyJobManager = require('../modules/company/company-applyJob-manager');
+const companyJobseekerMAnager = require('../modules/company/company-jobseeker-manager');
 let router = express.Router();
 const databaseOfflineMode = false;
 let companyTokens = [];
@@ -505,5 +507,167 @@ router.post('/update-advertisement-archive-row', requiresAuthentication, functio
     }
 });
 
+router.post('/get-apply-jobs', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-apply-jobs");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-apply-jobs]: userName not exist'
+        ,'404': '[get-apply-jobs]: cant connect to database'
+        ,'405': '[get-apply-jobs]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobAdvertisementId){	errValues.push("err jobAdvertisementId");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                company_id:company_id,
+                advertismenet_id: request.body.jobAdvertisementId
+            };
+            console.log(data);
+            companyApplyJobManager.getApplyJobs( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = [
+                            "hirdetés neve",
+                            "hirdetés leírás",
+                            "Szeged"
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/update-apply-job', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/update-apply-job");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[update-apply-job]: userName not exist'
+        ,'404': '[update-apply-job]: cant connect to database'
+        ,'405': '[update-apply-job]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.applyJobId){	errValues.push("err applyJobId");	}else { counter++; }
+    if(!request.body.applyJobState){	errValues.push("err applyJobState");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 2){
+        if(counter === 2){
+            const data = {
+                applyJobId: request.body.applyJobId,
+                applyJobState: request.body.applyJobState
+            };
+            console.log(data);
+            companyApplyJobManager.updateApplyJobs( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send('Successfull update job apply');
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = [
+                            "hirdetés neve",
+                            "hirdetés leírás",
+                            "Szeged"
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/get-jobseeker-by-id', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-jobseeker-by-id");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-jobseeker-by-id]: userName not exist'
+        ,'404': '[get-jobseeker-by-id]: cant connect to database'
+        ,'405': '[get-jobseeker-by-id]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobseekerId){	errValues.push("err jobseekerId");	}else { counter++; }
+     const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                jobseekerId: request.body.jobseekerId
+            };
+            console.log(data);
+            companyJobseekerMAnager.getJobseekerById( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = [
+
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
 
 module.exports = router;

@@ -47,6 +47,41 @@ exports.getApplyJob = (data, reqCodeMsg, callback) =>{
         });
 };
 
+exports.getApplyJobs = (data, reqCodeMsg, callback) =>{
+    if (debug)
+        console.log('Called getApplyJobs function');
+    oracledb.getConnection(
+        {
+            user          : dbConfig.user,
+            password      : dbConfig.password,
+            connectString : dbConfig.connectString
+        },
+        (err, connection) => {
+            if (err) {
+                console.error(err);
+                callback(404,reqCodeMsg[404]);
+            } else {
+                if(debug)
+                    console.log("Successfull create db connection");
+                const sql = "SELECT JOBSEEKERS_APPLY_JOB.*, JOB_ADVERTISEMENT.NAME FROM JOBSEEKERS_APPLY_JOB, JOB_ADVERTISEMENT WHERE JOBSEEKER_ID = :jobseeker_id AND JOB_ADVERTISEMENT.ID = JOBSEEKERS_APPLY_JOB.JOB_ADVERTISEMENT_ID";
+                if(debug)
+                    console.log(sql);
+                connection.execute(sql, [
+                    data.jobseeker_id
+                    ]
+                    , (err, resp) => {
+                        doRelease(connection);
+                        if (err) {
+                            console.error(err);
+                            callback(405, reqCodeMsg[405]);
+                        } else {
+                            callback(200, resp.rows);
+                        }
+                    });
+            }
+        });
+};
+
 exports.insertNewApplyJob = (data, reqCodeMsg, callback) =>{
     if (debug)
         console.log('Called insertNewApplyJob function');

@@ -2,6 +2,7 @@
 import React from 'react';
 import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.auth.action';
 import  JobseekerJobTypesPage from '../../components/jobseeker/JobseekerJobTypesPage';
+import  JobseekerApplyJobList from '../../components/jobseeker/JobseekerApplyJobList';
 import {connect} from "react-redux";
 import { Link } from 'react-router-dom';
 class JobseekersProfil extends React.Component {
@@ -92,6 +93,7 @@ class JobseekersProfil extends React.Component {
                     </ul>
                 </div>
                 <JobseekerJobTypesPage/>
+                <JobseekerApplyJobList/>
             </div>
         );
     }

@@ -375,6 +375,33 @@ router.post('/get-apply-job', requiresAuthentication, function(request, response
     }
 });
 
+router.post('/get-apply-jobs', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseekers/get-apply-jobs");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-apply-jobs]: userName not exist'
+        ,'404': '[get-apply-jobs]: cant connect to database'
+        ,'405': '[get-apply-jobs]:  query throw error'
+    };
+
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const data = {
+        jobseeker_id:decodedToken.id
+    };
+
+    JobseekersApplyJobManager.getApplyJobs( data, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send(o);
+        }else {
+            response.status(e).send(o);
+        }
+    });
+
+
+});
+
 router.post('/add-new-apply-job', requiresAuthentication, function(request, response) {
     console.log("["+ new Date()+"][POST]:/api/jobseekers/add-new-apply-job");
 

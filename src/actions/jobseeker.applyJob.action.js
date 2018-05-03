@@ -14,6 +14,20 @@ export function getApllyJob(data,token) {
     };
 }
 
+export function getApllyJobs(data,token) {
+    //console.log(token);
+
+    let axiosConfig = {
+        headers: {
+            'access_token': token
+        }
+    };
+
+    return dispatch => {
+        return axios.post('/api/jobseekers/get-apply-jobs',data,axiosConfig );
+    };
+}
+
 export function insertNewApplyJob(data,token) {
     //console.log(token);
     //console.log(data)

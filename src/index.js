@@ -59,6 +59,8 @@ import AdminPanel from "./components/admin/AdminPanel";
 import AdminAdvertisementInspectPage from "./components/admin/AdminAdvertisementInspectPage";
 import SearchResultPage from "./components/SearchResultPage";
 import AdvertisementPage from "./components/AdvertisementPage";
+import CompanyAdvertisementPage from "./components/company/CompanyAdvertisementPage";
+import CompanyJobseekerProfil from "./components/company/CompanyJobseekerProfil";
 
 const MyApp = () => (
     <div>
@@ -78,6 +80,8 @@ const MyApp = () => (
             <Route path="/company-profil" component={CompanyProfil} />
             <Route path="/company-add-new-advertisment" component={CompanyAddNewJobAdvertisment} />
             <Route path="/company-update-advertisment-by-id/:id" component={CompanyUpdateJobAdvertisementById} />
+            <Route path="/company-advertisement/:advertisement_id" component={CompanyAdvertisementPage} />
+            <Route path="/company-get-jobseeker/:jobseekerId" component={CompanyJobseekerProfil} />
 
             <Route path="/admin-login" component={AdminLoginPage} />
             <Route path="/admin-panel" component={AdminPanel} />

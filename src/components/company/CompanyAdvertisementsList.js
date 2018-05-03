@@ -93,6 +93,9 @@ class CompanyAdvertisementsList extends React.Component {
     updateAdvertisementById(advertisement_id){
         this.context.router.history.push('/company-update-advertisment-by-id/'+advertisement_id);
     }
+    openAdvertisementById(advertisement_id){
+        this.context.router.history.push('/company-advertisement/'+advertisement_id);
+    }
     color (inspected, archive) {
         if(inspected === '0' && archive === '0'){
             return {backgroundColor: 'yellow'}
@@ -156,6 +159,9 @@ class CompanyAdvertisementsList extends React.Component {
                                 }
                                 </td>
                                 <td>
+                                    <button type="button" className="btn btn-info"  onClick={
+                                        this.openAdvertisementById.bind(this, advertisement[0])
+                                    }>Info</button>
                                     <button type="button" className="btn btn-warning"  onClick={
                                         this.updateAdvertisementById.bind(this, advertisement[0])
                                     }>edit</button>
