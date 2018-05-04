@@ -6,6 +6,7 @@ const _ = require('underscore');
 const JobseekersAccountManager = require('../modules/jobseekers/jobseekers-account-manager');
 const JobseekersJobTypesManager = require('../modules/jobseekers/jobseekers-jobTypes-mannager');
 const JobseekersApplyJobManager = require('../modules/jobseekers/jobseekers-applyJob-manager');
+const JobseekersCompanyManager = require('../modules/jobseekers/jobseekers-company-manager');
 let router = express.Router();
 const databaseOfflineMode = true;
 let userTokens = [];
@@ -480,6 +481,53 @@ router.post('/del-apply-job', requiresAuthentication, function(request, response
             //console.log(request);
             console.log(request.body);
             response.status(407).send(errValues);
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+
+router.post('/insert-company-rating', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseeker/insert-company-rating");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[insert-company-rating]: userName not exist'
+        ,'404': '[insert-company-rating]: cant connect to database'
+        ,'405': '[insert-company-rating]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.companyId){	errValues.push("err companyId");	}else { counter++; }
+    if(!request.body.rating){	errValues.push("err rating");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const jobseekerId = decodedToken.id;
+
+    if((counter + errValues.length) === 2){
+        if(counter === 2){
+            const data = {
+                companyId: request.body.companyId,
+                jobseekerId: jobseekerId,
+                rating: request.body.rating
+            };
+            console.log(data);
+            JobseekersCompanyManager.insertCompanyRating( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
         }
     }else {
         //console.log(request);

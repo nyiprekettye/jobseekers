@@ -2,6 +2,7 @@ import React from 'react';
 import {getJobseekerById} from '../../actions/company.jobseeker.action'
 import {companyLogout} from '../../actions/company.auth.action'
 import {connect} from "react-redux";
+import CompanyJobseekerRating from "./CompanyJobseekerRating";
 
 class CompanyJobseekerProfil extends React.Component {
     constructor(props) {
@@ -65,10 +66,10 @@ class CompanyJobseekerProfil extends React.Component {
         if (this.state.loading === 'true') {
             return <h2>Loading...</h2>;
         }
-        const {jobAdvertisement, jobsekker} =  this.state;
+        const {jobAdvertisement, jobsekker, jobseekerId} =  this.state;
         return (
             <div className="jumbotron">
-                <h2>Hirdetés oldala!</h2>
+                <h2>Jobseeker oldala!</h2>
                 <div className="list-group">
 
                     <span className="list-group-item">
@@ -82,6 +83,7 @@ class CompanyJobseekerProfil extends React.Component {
                     </span>
 
                 </div>
+                <CompanyJobseekerRating jobseekerId={jobseekerId}/>
             </div>
         );
     }

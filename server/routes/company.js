@@ -670,4 +670,102 @@ router.post('/get-jobseeker-by-id', requiresAuthentication,  function(request, r
     }
 });
 
+router.post('/get-jobseeker-rating', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/get-jobseeker-rating");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-jobseeker-rating]: userName not exist'
+        ,'404': '[get-jobseeker-rating]: cant connect to database'
+        ,'405': '[get-jobseeker-rating]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobseekerId){	errValues.push("err jobseekerId");	}else { counter++; }
+     const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                jobseekerId: request.body.jobseekerId
+            };
+            console.log(data);
+            companyJobseekerMAnager.getJobseekerRating( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    if (databaseOfflineMode) {
+                        let data = [
+
+                        ];
+                        console.log(o);
+                        console.log('But sent test data!');
+                        response.status(200).send(data);
+                    }else {
+                        response.status(e).send(o);
+                    }
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/insert-jobseeker-rating', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/company/insert-jobseeker-rating");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[insert-jobseeker-rating]: userName not exist'
+        ,'404': '[insert-jobseeker-rating]: cant connect to database'
+        ,'405': '[insert-jobseeker-rating]:  query throw error'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.jobseekerId){	errValues.push("err jobseekerId");	}else { counter++; }
+    if(!request.body.rating){	errValues.push("err rating");	}else { counter++; }
+     const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const company_id = decodedToken.id;
+
+    if((counter + errValues.length) === 2){
+        if(counter === 2){
+            const data = {
+                jobseekerId: request.body.jobseekerId,
+                company_id: company_id,
+                rating: request.body.rating
+            };
+            console.log(data);
+            companyJobseekerMAnager.insertJobseekerRating( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
 module.exports = router;

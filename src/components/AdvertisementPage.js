@@ -86,9 +86,8 @@ class AdvertisementPage extends React.Component {
             });
     }
 
-    openAdvertisement(advertisement_id){
-        console.log(advertisement_id);
-        this.context.router.history.push('/advertisement/'+advertisement_id);
+    openCompany(company_id){
+        this.context.router.history.push('/company/'+company_id);
     }
 
     insertNewApplyJob(){
@@ -152,14 +151,19 @@ class AdvertisementPage extends React.Component {
                     <span className="list-group-item">
                         <h3 className="list-group-item-heading"><strong><u>{jobAdvertisement[1]}</u></strong></h3>
                     </span>
-                    <span className="list-group-item">
-                        <p className="list-group-item-text"><strong>Type: </strong>{jobAdvertisement[7]}</p>
+                    <span className="list-group-item" >
+                        <p className="list-group-item-text"><strong>Type: </strong>{jobAdvertisement[8]}</p>
+                        <p className="list-group-item-text">
+                            <button className="btn btn-info" onClick={this.openCompany.bind(this, jobAdvertisement[5])}>
+                                Open Company
+                            </button>
+                        </p>
                     </span>
                     <span className="list-group-item">
                         <p className="list-group-item-text"><strong>DATE: </strong>{jobAdvertisement[3]}</p>
                     </span>
                     <span className="list-group-item">
-                        <p className="list-group-item-text"><strong>Company name: </strong>{jobAdvertisement[5]}</p>
+                        <p className="list-group-item-text"><strong>Company name: </strong>{jobAdvertisement[6]}</p>
                     </span>
                     <span className="list-group-item">
                         <p className="list-group-item-text"><strong>City: </strong>{jobAdvertisement[2]}</p>

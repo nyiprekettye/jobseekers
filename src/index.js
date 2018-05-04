@@ -61,6 +61,7 @@ import SearchResultPage from "./components/SearchResultPage";
 import AdvertisementPage from "./components/AdvertisementPage";
 import CompanyAdvertisementPage from "./components/company/CompanyAdvertisementPage";
 import CompanyJobseekerProfil from "./components/company/CompanyJobseekerProfil";
+import CompanyPage from "./components/CompanyPage";
 
 const MyApp = () => (
     <div>
@@ -68,6 +69,7 @@ const MyApp = () => (
             <Greetings />
             <Route path="/search/:searchText" component={SearchResultPage} />
             <Route path="/advertisement/:advertisement_id" component={AdvertisementPage} />
+            <Route path="/company/:company_id" component={CompanyPage} />
 
 
             <Route path="/jobseekers-login" component={JobseekersLoginPage} />
