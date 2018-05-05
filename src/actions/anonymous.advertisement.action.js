@@ -14,3 +14,11 @@ export function getAdvertisementById(data) {
         return axios.post('/api/anonymous/get-advertisement-by-id',data );
     };
 }
+
+export function getAllAdvertisements(data) {
+    //console.log(token);
+
+    return dispatch => {
+        return axios.post('/api/anonymous/get-all-advertisements',data );
+    };
+}

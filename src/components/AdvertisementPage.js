@@ -1,6 +1,6 @@
 import React from 'react';
 import SearchPage from "./SearchPage";
-import {getAdvertisementById} from '../actions/anonymous.advertiement.action'
+import {getAdvertisementById} from '../actions/anonymous.advertisement.action'
 import {getApllyJob, insertNewApplyJob, delApplyJob} from '../actions/jobseeker.applyJob.action';
 import {jobseekersLogout} from '../actions/jobseeker.auth.action';
 import {connect} from "react-redux";

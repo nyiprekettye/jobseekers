@@ -62,11 +62,13 @@ import AdvertisementPage from "./components/AdvertisementPage";
 import CompanyAdvertisementPage from "./components/company/CompanyAdvertisementPage";
 import CompanyJobseekerProfil from "./components/company/CompanyJobseekerProfil";
 import CompanyPage from "./components/CompanyPage";
+import SearchResultEverything from "./SearchResultEverything";
 
 const MyApp = () => (
     <div>
         <App>
             <Greetings />
+            <Route path="/search-all" component={SearchResultEverything} />
             <Route path="/search/:searchText" component={SearchResultPage} />
             <Route path="/advertisement/:advertisement_id" component={AdvertisementPage} />
             <Route path="/company/:company_id" component={CompanyPage} />
@@ -88,7 +90,6 @@ const MyApp = () => (
             <Route path="/admin-login" component={AdminLoginPage} />
             <Route path="/admin-panel" component={AdminPanel} />
             <Route path="/admin-inspect-advertisment-by-id/:id" component={AdminAdvertisementInspectPage} />
-
 
         </App>
     </div>

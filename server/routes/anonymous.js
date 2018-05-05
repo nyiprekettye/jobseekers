@@ -107,6 +107,37 @@ router.post('/get-advertisement-by-id', function(request, response) {
     }
 });
 
+router.post('/get-all-advertisements', function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/anonymous/get-all-advertisements");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-all-advertisements]: userName not exist'
+        ,'404': '[get-all-advertisements]: cant connect to database'
+        ,'405': '[get-all-advertisements]: get-advertisement-by-id]:  query throw error'
+        ,'407': '[get-all-advertisements]: didnt get enought parameters'
+    };
+
+
+
+    anonymousAdvertisementManager.getAllAdvertisements( {}, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send(o);
+        }else {
+            if (databaseOfflineMode) {
+                let data = [
+                ];
+                console.log(o);
+                console.log('But sent test data!');
+                response.status(200).send(data);
+            }else {
+                response.status(e).send(o);
+            }
+        }
+    });
+
+});
+
 router.post('/get-company-by-id', function(request, response) {
     console.log("["+ new Date()+"][POST]:/api/anonymous/get-company-by-id");
 

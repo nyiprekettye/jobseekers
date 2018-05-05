@@ -20,7 +20,12 @@ class SearchPage extends React.Component {
     onSubmit(e) {
         e.preventDefault();
        // console.log(this.state.searchText);
-        window.location.href= "/search/"+this.state.searchText
+        if(this.state.searchText ===''){
+
+            window.location.href= "/search-all/"
+        }else {
+            window.location.href= "/search/"+this.state.searchText
+        }
         //this.context.router.history.push('/search/'+this.state.searchText+'')
     }
     render() {

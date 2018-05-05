@@ -18,8 +18,8 @@ class AdminPanel extends React.Component {
         return (
             <div>
                 <h1>Admin Panel</h1>
-                <AdminAdvertisementsList/>
                 <AdminAdvertisementPaymentPage/>
+                <AdminAdvertisementsList/>
             </div>
         );
     }

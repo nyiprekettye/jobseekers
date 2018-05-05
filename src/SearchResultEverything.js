@@ -1,13 +1,11 @@
 import React from 'react';
-import SearchPage from "./SearchPage";
-import {getAdvertisementBySearchText} from '../actions/anonymous.advertisement.action'
+import {getAllAdvertisements} from './actions/anonymous.advertisement.action';
 import {connect} from "react-redux";
 
-class SearchResultPage extends React.Component {
+class SearchResultEverything extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchText: this.props.match.params.searchText,
             jobAdvertisements : [],
             loading: 'initial'
         };
@@ -16,8 +14,8 @@ class SearchResultPage extends React.Component {
 
     loadData() {
         let promise = new Promise((resolve, reject) => {
-            this.props.getAdvertisementBySearchText(
-                {searchText:this.state.searchText}
+            this.props.getAllAdvertisements(
+                {}
             ).then(
                 (resData) => {
                     //console.log(resData.data);
@@ -47,7 +45,6 @@ class SearchResultPage extends React.Component {
                 //console.log(this.state);
             },(err) => {
                 console.log(err)
-                //this.props.companyLogout();
             });
     }
 
@@ -91,11 +88,11 @@ class SearchResultPage extends React.Component {
 }
 
 
-SearchResultPage.propTypes = {
-    getAdvertisementBySearchText: React.PropTypes.func.isRequired
+SearchResultEverything.propTypes = {
+    getAllAdvertisements: React.PropTypes.func.isRequired
 };
-SearchResultPage.contextTypes = {
+SearchResultEverything.contextTypes = {
     router: React.PropTypes.object.isRequired
 }
 
-export default connect(null, { getAdvertisementBySearchText })(SearchResultPage);
+export default connect(null, { getAllAdvertisements })(SearchResultEverything);
