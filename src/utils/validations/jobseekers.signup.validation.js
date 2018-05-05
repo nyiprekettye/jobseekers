@@ -27,6 +27,13 @@ export default function validateInput(data) {
     if (Validator.isEmpty(data.city)) {
         errors.city = 'This field is required';
     }
+    if (Validator.isEmpty(data.birth)) {
+        errors.birth = 'This field is required';
+    }
+
+    if (data.birth <= 1900) {
+        errors.birth = 'This field is required';
+    }
 
     return {
         errors,

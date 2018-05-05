@@ -3,6 +3,7 @@ import React from 'react';
 import {jobseekerGetData, jobseekersLogout} from '../../actions/jobseeker.auth.action';
 import  JobseekerJobTypesPage from '../../components/jobseeker/JobseekerJobTypesPage';
 import  JobseekerApplyJobList from '../../components/jobseeker/JobseekerApplyJobList';
+import  JobseekerCVListPage from '../../components/jobseeker/JobseekerCVListPage';
 import {connect} from "react-redux";
 import { Link } from 'react-router-dom';
 class JobseekersProfil extends React.Component {
@@ -92,6 +93,7 @@ class JobseekersProfil extends React.Component {
                         <li><Link to="/jobseeker-add-new-cv">/jobseeker-add-new-cv</Link></li>
                     </ul>
                 </div>
+                <JobseekerCVListPage/>
                 <JobseekerJobTypesPage/>
                 <JobseekerApplyJobList/>
             </div>

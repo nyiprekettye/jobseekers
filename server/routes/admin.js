@@ -5,6 +5,7 @@ const secret = 'jwtuserTokensecret';
 const _ = require('underscore');
 const adminAccountManager = require('../modules/admin/admin-account-manager');
 import adminAdvertisementManager from '../modules/admin/admin-advertisement-manager';
+import adminPaymentsManager from '../modules/admin/admin-payments-manager';
 let router = express.Router();
 const databaseOfflineMode = false;
 let adminTokens = [];
@@ -238,6 +239,28 @@ router.post('/update-advertisement-inspected-by-id', requiresAuthentication, fun
         console.log(request.body);
         response.status(407).send(reqCodeMsg[407]);
     }
+});
+
+
+
+router.post('/get-payments-data', requiresAuthentication, function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/admin/get-payments-data");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-payments-data]: userName not exist'
+        ,'404': '[get-payments-data]: cant connect to database'
+        ,'405': '[get-payments-data]:  query throw error'
+        ,'407': '[get-payments-data]: didnt get enought parameters'
+    };
+
+    adminPaymentsManager.getPaymentsData( {}, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send(o);
+        }else {
+            response.status(e).send(o);
+        }
+    });
 });
 
 

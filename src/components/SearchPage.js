@@ -20,7 +20,8 @@ class SearchPage extends React.Component {
     onSubmit(e) {
         e.preventDefault();
        // console.log(this.state.searchText);
-        this.context.router.history.push('/search/'+this.state.searchText+'')
+        window.location.href= "/search/"+this.state.searchText
+        //this.context.router.history.push('/search/'+this.state.searchText+'')
     }
     render() {
         const {searchText, errors,isLoading} = this.state;
@@ -34,6 +35,7 @@ class SearchPage extends React.Component {
                     <button className="btn btn-primary btn-lg" disabled={isLoading}>
                         Search
                     </button>
+
             </form>
         );
     }

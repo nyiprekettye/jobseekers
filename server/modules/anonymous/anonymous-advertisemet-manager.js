@@ -32,12 +32,11 @@ exports.getAdvertisementsBySearchText = (data,reqCodeMsg, callback) =>{
                         "COMPANY.NAME, "+
                         "JOB_TYPE.*"+
                     "FROM JOB_ADVERTISEMENT, COMPANY, JOB_TYPE "+
-                    "WHERE JOB_ADVERTISEMENT.ADV_INSPECTED LIKE 1 "+
+                    "WHERE ( INSTR(JOB_ADVERTISEMENT.NAME,:q1) > 0 OR INSTR(JOB_ADVERTISEMENT.DESCRIPTION,:q2) > 0 )" +
+                        "AND JOB_ADVERTISEMENT.ADV_INSPECTED LIKE 1 "+
                         "AND JOB_ADVERTISEMENT.ADV_ARCHIVE LIKE 0 "+
                         "AND COMPANY.ID = JOB_ADVERTISEMENT.COMPANY_ID "+
-                        "AND JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID "+
-                        "AND (INSTR(JOB_ADVERTISEMENT.NAME,:q1) > 0 "+
-                        "OR INSTR(JOB_ADVERTISEMENT.DESCRIPTION,:q2) > 0)";
+                        "AND JOB_TYPE.ID = JOB_ADVERTISEMENT.JOB_TYPE_ID ";
                 if(debug)
                     console.log(sql);
                 connection.execute(sql, [

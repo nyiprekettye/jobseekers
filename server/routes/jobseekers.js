@@ -7,6 +7,7 @@ const JobseekersAccountManager = require('../modules/jobseekers/jobseekers-accou
 const JobseekersJobTypesManager = require('../modules/jobseekers/jobseekers-jobTypes-mannager');
 const JobseekersApplyJobManager = require('../modules/jobseekers/jobseekers-applyJob-manager');
 const JobseekersCompanyManager = require('../modules/jobseekers/jobseekers-company-manager');
+const JobseekersCVManager = require('../modules/jobseekers/jobseekers-CV-manager');
 let router = express.Router();
 const databaseOfflineMode = true;
 let userTokens = [];
@@ -489,7 +490,6 @@ router.post('/del-apply-job', requiresAuthentication, function(request, response
     }
 });
 
-
 router.post('/insert-company-rating', requiresAuthentication,  function(request, response) {
     console.log("["+ new Date()+"][POST]:/api/jobseeker/insert-company-rating");
 
@@ -535,6 +535,128 @@ router.post('/insert-company-rating', requiresAuthentication,  function(request,
         response.status(407).send(reqCodeMsg[407]);
     }
 });
+
+router.post('/add-new-cv', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseeker/add-new-cv");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[add-new-cv]: userName not exist'
+        ,'404': '[add-new-cv]: cant connect to database'
+        ,'405': '[add-new-cv]:  query throw error'
+        ,'406': '[add-new-cv]:  img copy throw err'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.name){	errValues.push("err companyId");	}else { counter++; }
+    if(!request.body.language){	errValues.push("err language");	}else { counter++; }
+    if(!request.body.content){	errValues.push("err content");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const jobseekerId = decodedToken.id;
+
+    if((counter + errValues.length) === 3){
+        if(counter === 3){
+            const data = {
+                jobseekerId: jobseekerId,
+                name: request.body.name,
+                language: request.body.language,
+                content: request.body.content
+            };
+            console.log(data);
+            JobseekersCVManager.addNewCV( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
+router.post('/get-cvs-by-id', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseeker/get-cvs-by-id");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[get-cvs-by-id]: userName not exist'
+        ,'404': '[get-cvs-by-id]: cant connect to database'
+        ,'405': '[get-cvs-by-id]:  query throw error'
+        ,'406': '[get-cvs-by-id]:  img copy throw err'
+    };
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const jobseekerId = decodedToken.id;
+    const data = {
+        jobseekerId: jobseekerId
+    };
+    console.log(data);
+    JobseekersCVManager.getCVsById( data, reqCodeMsg, function(e, o){
+        if (e === 200) {
+            response.status(200).send(o);
+        }else {
+            response.status(e).send(o);
+        }
+    });
+
+
+});
+
+router.post('/del-cv-by-id', requiresAuthentication,  function(request, response) {
+    console.log("["+ new Date()+"][POST]:/api/jobseeker/del-cv-by-id");
+
+    const reqCodeMsg = {
+        '200': 'result'
+        ,'201': '[del-cv-by-id]: userName not exist'
+        ,'404': '[del-cv-by-id]: cant connect to database'
+        ,'405': '[del-cv-by-id]:  query throw error'
+        ,'406': '[del-cv-by-id]:  img copy throw err'
+    };
+    let errValues = [];
+    let counter = 0;
+
+    if(!request.body.cvId){	errValues.push("err cvId");	}else { counter++; }
+    const token= request.headers.access_token;
+    const decodedToken = jwt.decode(token, secret);
+    const jobseekerId = decodedToken.id;
+
+    if((counter + errValues.length) === 1){
+        if(counter === 1){
+            const data = {
+                cvId: request.body.cvId
+            };
+            console.log(data);
+            JobseekersCVManager.delCVById( data, reqCodeMsg, function(e, o){
+                if (e === 200) {
+                    response.status(200).send(o);
+                }else {
+                    response.status(e).send(o);
+                }
+            });
+
+        }else {
+            console.log(request.body);
+            response.status(407).send(errValues);
+
+        }
+    }else {
+        //console.log(request);
+        console.log(request.body);
+        response.status(407).send(reqCodeMsg[407]);
+    }
+});
+
 
 
 module.exports = router;

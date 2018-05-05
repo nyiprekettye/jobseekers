@@ -16,7 +16,7 @@ class JobseekersSignUpForm extends React.Component {
             pw: 'asd',
             pw2: 'asd',
             city: 'asd',
-            birth: 'asd',
+            birth: '-1',
             errors: { asd:'asd'
             },
             isLoading: false
@@ -133,7 +133,7 @@ class JobseekersSignUpForm extends React.Component {
 
 
                 <div className={classnames('form-group', { 'has-error': errors.birth })}>
-                    <label className="control-label">Job Types</label>
+                    <label className="control-label">Birth year: </label>
                     <select onChange={this.onChange}
                             value={birth}
                             name="birth">
