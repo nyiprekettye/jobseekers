@@ -45,6 +45,7 @@ exports.authJobseekers = (user, pass, reqCodeMsg, callback) =>{
                                 if (resp.rows[0][2] === pass) { // the passworld is correct
                                     if(debug)
                                         console.log(resp.rows[0][0]);
+                                    updateLastLogin(resp.rows[0][0], reqCodeMsg,(o,e)=>{});
                                     callback(200, resp.rows[0][0]);
 
                                 } else {// the passworld doesnt match
@@ -128,6 +129,44 @@ exports.regJobseeker = (name, pw, email,city, birth, reqCodeMsg, callback) =>{
             }
         });
 };
+
+
+const updateLastLogin = (jobseeker_id, reqCodeMsg, callback) =>{
+    if (debug)
+        console.log('Called updateLastLogin function');
+    oracledb.getConnection(
+        {
+            user          : dbConfig.user,
+            password      : dbConfig.password,
+            connectString : dbConfig.connectString
+        },
+        (err, connection) => {
+            if (err) {
+                console.error(err);
+                callback(404,reqCodeMsg[404]);
+            } else {
+                if(debug)
+                    console.log("Successfull create db connection");
+                const sql = "SELECT INSERT_JOBSEEKER_LAST_LOGIN(:id) FROM DUAL";
+                if(debug)
+                    console.log(sql);
+
+                connection.execute(sql, [
+                        jobseeker_id
+                    ]
+                    , (err, resp) => {
+                        doRelease(connection);
+                        if (err) {
+                            console.error(err);
+                            callback(405, reqCodeMsg[405]);
+                        } else {
+                            callback(200, resp.rows);
+                        }
+                    });
+            }
+        });
+};
+
 
 /*
 exports.authUserName = function(uname, reqCodeMsg, callback) {
